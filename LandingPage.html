@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>काठमाण्डौ उपत्यका ट्राफिक प्रहरी — Kathmandu Valley Traffic Police</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Domine:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --navy:       #0c2147;
+  --navy-mid:   #163270;
+  --blue:       #1a56a8;
+  --blue-light: #2e78d6;
+  --blue-pale:  #eaf2ff;
+  --gold:       #b8870b;
+  --gold-bright:#d4a01a;
+  --gold-pale:  #fff8e6;
+  --red:        #b52020;
+  --red-pale:   #fff1f1;
+  --green:      #1a7a4a;
+  --green-pale: #edfaf3;
+  --white:      #ffffff;
+  --bg:         #f5f7fc;
+  --bg2:        #eef1f8;
+  --text:       #1a2235;
+  --muted:      #6b778f;
+  --border:     #d8dff0;
+  --sh1:        0 2px 12px rgba(12,33,71,.07);
+  --sh2:        0 6px 28px rgba(12,33,71,.12);
+  --sh3:        0 14px 48px rgba(12,33,71,.17);
+  --r:          10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.65;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+button{font-family:'DM Sans',sans-serif;cursor:pointer}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes callBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
+
+/* TOP STRIP */
+.top-strip{background:var(--navy);padding:6px 0;font-size:12px;color:rgba(255,255,255,.6)}
+.ts-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center}
+.ts-left{display:flex;align-items:center;gap:6px}
+.ts-left i{font-size:10px;color:var(--gold-bright)}
+.lang-row{display:flex;gap:4px}
+.lbtn{border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.75);padding:2px 12px;font-size:11px;border-radius:3px;letter-spacing:.4px;transition:all .2s}
+.lbtn.active,.lbtn:hover{background:var(--gold-bright);border-color:var(--gold-bright);color:var(--navy);font-weight:700}
+
+/* HEADER */
+header{background:var(--white);border-bottom:3px solid var(--gold-bright);box-shadow:var(--sh2);position:sticky;top:0;z-index:200}
+.hdr{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px}
+.hdr-logo{width:70px;height:70px;border-radius:50%;border:3px solid var(--gold-bright);background:linear-gradient(145deg,var(--navy),var(--navy-mid));display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 3px 14px rgba(12,33,71,.2)}
+.hdr-logo i{font-size:24px;color:var(--gold-bright);margin-bottom:3px}
+.hdr-logo span{font-size:8px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.65);text-transform:uppercase}
+.hdr-titles{flex:1}
+.hdr-titles h1{font-family:'Noto Sans Devanagari',sans-serif;font-size:21px;font-weight:800;color:var(--navy);line-height:1.2}
+.hdr-titles .en{font-size:12.5px;color:var(--muted);margin-top:2px;letter-spacing:.4px;text-transform:uppercase}
+.hdr-titles .loc{font-size:12px;color:var(--blue);margin-top:4px;display:flex;align-items:center;gap:5px;font-weight:500}
+.hdr-titles .loc i{font-size:10px}
+.emrg-box{background:var(--navy);border-left:4px solid var(--gold-bright);padding:12px 18px;border-radius:8px;min-width:200px;flex-shrink:0}
+.emrg-box .el{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-bright);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.emrg-box .er{font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.9;display:flex;align-items:center;gap:7px}
+.emrg-box .er i{font-size:11px;color:rgba(255,255,255,.4);width:13px}
+.emrg-box .en{font-weight:700;color:#fff}
+
+/* NAV */
+nav{background:linear-gradient(90deg,var(--navy-mid),var(--navy));border-bottom:2px solid var(--gold-bright)}
+.nav-w{max-width:1200px;margin:0 auto;display:flex;padding:0 16px}
+.nl{color:rgba(255,255,255,.78);padding:13px 20px;font-size:12.5px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;position:relative;transition:color .2s;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.nl i{font-size:12px;opacity:.7}
+.nl::after{content:'';position:absolute;bottom:0;left:50%;right:50%;height:3px;background:var(--gold-bright);transition:left .25s,right .25s;border-radius:2px 2px 0 0}
+.nl:hover,.nl.active{color:#fff}
+.nl:hover::after,.nl.active::after{left:0;right:0}
+
+/* EMERGENCY BANNER */
+.emrg-banner{background:linear-gradient(90deg,#9b1515 0%,#c01b1b 50%,#9b1515 100%);padding:16px 0}
+.emrg-banner-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}
+.eb-num{font-family:'Domine',serif;font-size:48px;font-weight:700;color:#fff;line-height:1;animation:callBounce 2.5s ease-in-out infinite}
+.eb-divider{width:1px;height:52px;background:rgba(255,255,255,.25);flex-shrink:0}
+.eb-text h3{font-size:17px;font-weight:700;color:#fff;margin-bottom:4px}
+.eb-text p{font-size:13px;color:rgba(255,255,255,.75)}
+.eb-call{background:#fff;color:var(--red);padding:13px 30px;border-radius:6px;font-size:14.5px;font-weight:700;border:none;display:flex;align-items:center;gap:9px;transition:all .22s;box-shadow:0 4px 18px rgba(0,0,0,.3)}
+.eb-call:hover{background:var(--gold-bright);color:var(--navy);transform:translateY(-2px)}
+.eb-call i{font-size:14px}
+
+/* TICKER */
+.ticker{background:var(--gold-bright);height:34px;display:flex;overflow:hidden;align-items:center}
+.ticker-lbl{background:var(--navy);color:var(--gold-bright);font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;padding:0 16px;height:100%;display:flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0}
+.ticker-lbl i{font-size:8px;color:var(--red);animation:pulse 1s infinite}
+.ticker-track{flex:1;overflow:hidden}
+.ticker-scroll{display:inline-flex;gap:56px;animation:ticker 32s linear infinite;white-space:nowrap;font-size:12.5px;font-weight:600;color:var(--navy);padding-left:24px}
+.ti::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--navy);opacity:.4;margin-right:10px;vertical-align:middle}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;background:var(--white)}
+.hero-img-strip{height:440px;position:relative;overflow:hidden}
+.hero-img-strip img{width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,33,71,.9) 0%,rgba(12,33,71,.65) 45%,rgba(12,33,71,.15) 100%)}
+.hero-copy{position:absolute;top:0;bottom:0;left:0;width:54%;display:flex;flex-direction:column;justify-content:center;padding:48px 60px;z-index:2}
+.hero-kicker{display:inline-flex;align-items:center;gap:8px;background:rgba(212,160,26,.18);border:1px solid rgba(212,160,26,.45);border-radius:4px;padding:5px 14px;font-size:11.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold-bright);margin-bottom:18px;width:fit-content;animation:fadeIn .6s ease both}
+.hero-kicker i{font-size:10px}
+.hero-h1{font-family:'Noto Sans Devanagari',sans-serif;font-size:clamp(24px,3.2vw,40px);font-weight:800;color:#fff;line-height:1.22;margin-bottom:8px;animation:fadeUp .6s .1s ease both}
+.hero-h1-en{font-family:'Domine',serif;font-size:clamp(14px,1.6vw,19px);font-weight:600;color:rgba(255,255,255,.65);line-height:1.35;margin-bottom:18px;animation:fadeUp .6s .15s ease both}
+.hero-desc{font-size:15px;color:rgba(255,255,255,.78);max-width:420px;line-height:1.75;margin-bottom:32px;animation:fadeUp .6s .2s ease both}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;animation:fadeUp .6s .28s ease both}
+.hbtn-main{display:inline-flex;align-items:center;gap:9px;background:var(--gold-bright);color:var(--navy);padding:14px 30px;font-size:14.5px;font-weight:700;border-radius:6px;border:none;letter-spacing:.2px;transition:all .22s;box-shadow:0 4px 20px rgba(212,160,26,.35)}
+.hbtn-main:hover{background:#e8b91a;transform:translateY(-2px);box-shadow:0 8px 28px rgba(212,160,26,.45)}
+.hbtn-main i{font-size:13px}
+.hbtn-sec{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.12);color:#fff;padding:14px 26px;font-size:14.5px;font-weight:600;border-radius:6px;border:1px solid rgba(255,255,255,.3);transition:all .22s;backdrop-filter:blur(6px)}
+.hbtn-sec:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.5)}
+.hbtn-sec i{font-size:13px}
+
+/* QUICK SERVICES BAR */
+.quick-svcs{background:var(--white);border-bottom:1px solid var(--border);box-shadow:var(--sh2)}
+.qs-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.qs-item{padding:22px 16px;text-align:center;border-right:1px solid var(--border);cursor:pointer;transition:background .2s;position:relative}
+.qs-item:last-child{border-right:none}
+.qs-item:hover{background:var(--blue-pale)}
+.qs-item::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--blue);transform:scaleX(0);transition:transform .22s}
+.qs-item:hover::after{transform:scaleX(1)}
+.qs-icon{width:52px;height:52px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .22s}
+.qs-item:hover .qs-icon{transform:scale(1.1)}
+.qi-b{background:var(--blue-pale);color:var(--blue)}
+.qi-g{background:var(--gold-pale);color:var(--gold)}
+.qi-r{background:var(--red-pale);color:var(--red)}
+.qi-gr{background:var(--green-pale);color:var(--green)}
+.qi-n{background:var(--bg2);color:var(--navy)}
+.qs-label{font-size:13px;font-weight:700;color:var(--navy);line-height:1.35}
+
+/* PAGE */
+.page{max-width:1200px;margin:0 auto;padding:52px 24px}
+
+/* SECTION HEADING */
+.sh{margin-bottom:36px}
+.sh-tag{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+.sh-tag i{font-size:11px}
+.sh h2{font-family:'Domine',serif;font-size:clamp(22px,2.8vw,32px);font-weight:700;color:var(--navy);line-height:1.2;letter-spacing:-.3px;margin-bottom:10px}
+.sh p{font-size:15px;color:var(--muted);max-width:540px;line-height:1.7}
+
+/* SERVICES GRID */
+.svcs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:56px}
+.svc-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:28px 22px 24px;text-align:center;cursor:pointer;box-shadow:var(--sh1);transition:transform .25s,box-shadow .25s,border-color .25s;position:relative;overflow:hidden}
+.svc-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;transform:scaleX(0);transition:transform .28s}
+.svc-card:hover{transform:translateY(-6px);box-shadow:var(--sh3)}
+.svc-card:hover::before{transform:scaleX(1)}
+.svc-card.sc-b::before{background:var(--blue)}
+.svc-card.sc-g::before{background:var(--gold-bright)}
+.svc-card.sc-r::before{background:var(--red)}
+.svc-card.sc-gr::before{background:var(--green)}
+.svc-img{width:80px;height:80px;border-radius:50%;margin:0 auto 18px;overflow:hidden;border:3px solid var(--border);background:var(--bg2)}
+.svc-img img{width:100%;height:100%;object-fit:cover}
+.svc-icon{width:68px;height:68px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.svc-name{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:8px;line-height:1.3}
+.svc-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.svc-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--blue);transition:gap .2s}
+.svc-card:hover .svc-link{gap:10px}
+.svc-link i{font-size:11px}
+
+/* ABOUT */
+.about-strip{background:var(--navy);border-radius:var(--r);overflow:hidden;display:grid;grid-template-columns:1fr 1fr;margin-bottom:56px;box-shadow:var(--sh3)}
+.about-copy{padding:50px 46px;display:flex;flex-direction:column;justify-content:center}
+.about-tag{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-bright);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.about-tag i{font-size:10px}
+.about-copy h2{font-family:'Domine',serif;font-size:29px;font-weight:700;color:#fff;line-height:1.22;margin-bottom:16px}
+.about-copy h2 span{color:var(--gold-bright)}
+.about-copy p{font-size:14.5px;color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:30px}
+.about-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.1);padding-top:24px}
+.as{text-align:center;padding:0 8px;border-right:1px solid rgba(255,255,255,.1)}
+.as:last-child{border-right:none}
+.as-num{font-family:'Domine',serif;font-size:30px;font-weight:700;color:var(--gold-bright);line-height:1;margin-bottom:5px}
+.as-lbl{font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.4;font-weight:500}
+.about-photo{position:relative;overflow:hidden}
+.about-photo img{width:100%;height:100%;object-fit:cover}
+.about-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(270deg,transparent 40%,rgba(12,33,71,.5) 100%)}
+
+/* NEWS */
+.news-layout{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin-bottom:56px}
+.news-featured{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh1);cursor:pointer;transition:box-shadow .25s}
+.news-featured:hover{box-shadow:var(--sh3)}
+.nf-img{height:260px;overflow:hidden;position:relative}
+.nf-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.news-featured:hover .nf-img img{transform:scale(1.04)}
+.nf-cat{position:absolute;bottom:16px;left:16px;background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase}
+.nf-body{padding:22px 24px}
+.nf-date{font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.nf-date i{font-size:11px}
+.nf-title{font-family:'Domine',serif;font-size:20px;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:10px}
+.nf-desc{font-size:13.5px;color:var(--muted);line-height:1.65;margin-bottom:16px}
+.nf-rm{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--blue);transition:gap .2s}
+.news-featured:hover .nf-rm{gap:10px}
+.nf-rm i{font-size:11px}
+.news-list{display:flex;flex-direction:column;gap:12px}
+.nc-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);display:flex;overflow:hidden;box-shadow:var(--sh1);cursor:pointer;transition:transform .22s,box-shadow .22s}
+.nc-card:hover{transform:translateX(5px);box-shadow:var(--sh2)}
+.nc-accent{width:4px;background:linear-gradient(180deg,var(--blue),var(--blue-light));flex-shrink:0}
+.nc-thumb{width:100px;flex-shrink:0;overflow:hidden;background:var(--bg2)}
+.nc-thumb img{width:100%;height:100%;object-fit:cover}
+.nc-body{padding:14px 16px;flex:1}
+.nc-cat{font-size:10.5px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--blue);margin-bottom:5px}
+.nc-title{font-size:14px;font-weight:700;color:var(--navy);line-height:1.35;margin-bottom:5px}
+.nc-date{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.nc-date i{font-size:10px}
+
+/* CITIZEN SERVICES */
+.cit-section{background:var(--blue-pale);border-radius:var(--r);padding:48px;margin-bottom:56px;border:1px solid rgba(26,86,168,.12)}
+.cit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.cit-card{background:var(--white);border-radius:8px;padding:26px 22px;border:1px solid var(--border);box-shadow:var(--sh1);display:flex;flex-direction:column;gap:12px;cursor:pointer;transition:all .22s}
+.cit-card:hover{transform:translateY(-4px);box-shadow:var(--sh3);border-color:var(--blue)}
+.ci-head{display:flex;align-items:center;gap:14px}
+.ci-ico{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.cii-b{background:var(--blue-pale);color:var(--blue)}
+.cii-g{background:var(--gold-pale);color:var(--gold)}
+.cii-r{background:var(--red-pale);color:var(--red)}
+.cii-gr{background:var(--green-pale);color:var(--green)}
+.cii-n{background:var(--bg2);color:var(--navy)}
+.cii-t{background:#e6f7f7;color:#0e7c7b}
+.cit-name{font-size:15px;font-weight:700;color:var(--navy)}
+.cit-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.cit-lnk{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--blue);margin-top:4px;transition:gap .2s}
+.cit-card:hover .cit-lnk{gap:11px}
+.cit-lnk i{font-size:11px}
+
+/* OFFICER + HELPLINE */
+.pair-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:56px}
+.officer-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh1)}
+.oc-hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--navy)}
+.oc-hdr i{color:var(--blue)}
+.oc-body{padding:24px;text-align:center}
+.oc-photo{width:110px;height:130px;border-radius:8px;overflow:hidden;margin:0 auto 16px;border:3px solid var(--border);position:relative}
+.oc-photo img{width:100%;height:100%;object-fit:cover;object-position:top}
+.oc-badge-pin{position:absolute;bottom:-8px;right:-8px;background:var(--blue);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.oc-badge-pin i{font-size:12px;color:#fff}
+.oc-name{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.oc-rank{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--blue)}
+.oc-dept{font-size:12px;color:var(--muted);margin-top:4px}
+.oc-quote{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.65;max-width:280px;margin-left:auto;margin-right:auto;font-style:italic;border-left:3px solid var(--blue-pale);padding-left:12px;text-align:left}
+
+.helpline-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);border-radius:var(--r);padding:36px 30px;text-align:center;box-shadow:var(--sh3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.hl-icon-ring{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.hl-icon-ring i{font-size:30px;color:var(--gold-bright)}
+.hl-label{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.hl-num{font-family:'Domine',serif;font-size:80px;font-weight:700;color:var(--gold-bright);line-height:1}
+.hl-sub{font-size:13px;color:rgba(255,255,255,.6)}
+.hl-btn{display:inline-flex;align-items:center;gap:9px;background:var(--gold-bright);color:var(--navy);padding:14px 36px;border-radius:6px;font-size:15px;font-weight:700;border:none;margin-top:8px;transition:all .2s;box-shadow:0 4px 20px rgba(212,160,26,.3)}
+.hl-btn:hover{background:#e8b91a;transform:translateY(-2px)}
+.hl-btn i{font-size:15px}
+.hl-note{font-size:12px;color:rgba(255,255,255,.4)}
+
+/* NOTICES + APP */
+.bot-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:56px}
+.notices-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh1)}
+.nc-hdr{background:var(--gold-pale);border-bottom:1px solid rgba(184,135,11,.2);padding:16px 20px;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#7a5800}
+.nc-hdr i{color:var(--gold)}
+.ni-row{display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s}
+.ni-row:last-child{border-bottom:none}
+.ni-row:hover{background:var(--bg)}
+.ni-box{width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.ni-box i{font-size:14px}
+.ni-title-txt{font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.4;margin-bottom:4px}
+.ni-meta{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.ni-meta i{font-size:10px}
+.ni-chev{margin-left:auto;color:var(--border);font-size:13px;transition:color .2s;flex-shrink:0;margin-top:4px}
+.ni-row:hover .ni-chev{color:var(--blue)}
+
+.app-promo{background:var(--navy);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh3)}
+.ap-img{height:180px;overflow:hidden;position:relative}
+.ap-img img{width:100%;height:100%;object-fit:cover;opacity:.4;filter:saturate(.6)}
+.ap-img::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,var(--navy) 0%,transparent 60%)}
+.ap-body{padding:28px 30px}
+.ap-tag{font-size:10.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold-bright);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.ap-tag i{font-size:10px}
+.ap-h{font-family:'Domine',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.25}
+.ap-desc{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.65;margin-bottom:22px}
+.store-btns{display:flex;flex-direction:column;gap:10px}
+.s-btn{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:11px 16px;color:#fff;transition:all .2s;cursor:pointer}
+.s-btn:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)}
+.s-btn i{font-size:22px;color:rgba(255,255,255,.7)}
+.s-sub{font-size:10px;color:rgba(255,255,255,.5);display:block}
+.s-main{font-size:14px;font-weight:700;display:block;margin-top:1px}
+
+/* FOOTER */
+footer{background:var(--navy);color:rgba(255,255,255,.72)}
+.ft{max-width:1200px;margin:0 auto;padding:48px 24px 36px;display:grid;grid-template-columns:1.8fr 1fr 1fr 1.4fr;gap:40px}
+.ft-logo{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.ft-logo-mark{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold-bright);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ft-logo-mark i{font-size:18px;color:var(--gold-bright)}
+.ft-logo-txt{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;font-weight:700;color:#fff;line-height:1.3}
+.ft-logo-txt span{font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.45);font-weight:400;display:block}
+.ft-brand p{font-size:13px;line-height:1.85;color:rgba(255,255,255,.55);margin-bottom:16px}
+.ft-div{width:36px;height:2px;background:var(--gold-bright);border-radius:2px;margin:14px 0}
+.ft-col h4{font-size:10.5px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold-bright);margin-bottom:16px}
+.ft-list{list-style:none}
+.ft-list li{padding:7px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;transition:color .2s,padding-left .2s;display:flex;align-items:center;gap:8px}
+.ft-list li i{font-size:10px;color:var(--gold);width:12px}
+.ft-list li:hover{color:#fff;padding-left:4px}
+.ft-list li:last-child{border-bottom:none}
+.ft-ci{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;font-size:13px}
+.ft-ci-ico{width:30px;height:30px;background:rgba(255,255,255,.07);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ft-ci-ico i{font-size:13px;color:var(--gold-bright)}
+.ft-ci-txt{line-height:1.65;color:rgba(255,255,255,.7)}
+.ft-ci-txt strong{color:#fff;display:block}
+.ft-bot{border-top:1px solid rgba(255,255,255,.08);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;font-size:12px;color:rgba(255,255,255,.35);flex-wrap:wrap;gap:8px}
+.visit-num{background:rgba(255,255,255,.08);padding:2px 10px;border-radius:20px;font-weight:700;color:var(--gold-bright);letter-spacing:.8px}
+</style>
+</head>
+<body>
+
+<!-- TOP STRIP -->
+<div class="top-strip">
+  <div class="ts-inner">
+    <div class="ts-left">
+      <i class="fa-regular fa-calendar-days"></i>
+      <span>२०८२ माघ १० गते, आइतबार &nbsp;|&nbsp; Sunday, February 22, 2026</span>
+    </div>
+    <div class="lang-row">
+      <button class="lbtn active">नेपाली</button>
+      <button class="lbtn">EN</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr">
+    <div class="hdr-logo">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>Nepal Police</span>
+    </div>
+    <div class="hdr-titles">
+      <h1>काठमाण्डौ उपत्यका ट्राफिक प्रहरी कार्यालय</h1>
+      <div class="en">Kathmandu Valley Traffic Police Office</div>
+      <div class="loc"><i class="fa-solid fa-location-dot"></i> रामशाहपथ, काठमाडौं, नेपाल</div>
+    </div>
+    <div class="emrg-box">
+      <div class="el"><i class="fa-solid fa-triangle-exclamation"></i> Emergency</div>
+      <div class="er"><i class="fa-solid fa-phone"></i> Traffic Control: <span class="en">&nbsp;103</span></div>
+      <div class="er"><i class="fa-solid fa-phone-volume"></i> +977-01-5319641</div>
+      <div class="er"><i class="fa-regular fa-envelope"></i> vtpo@nepalpolice.gov.np</div>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-w">
+    <a href="#" class="nl active"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="#" class="nl"><i class="fa-regular fa-newspaper"></i> News</a>
+    <a href="upload-videos.html" class="nl"><i class="fa-solid fa-video"></i> Upload Videos</a>
+    <a href="#" class="nl"><i class="fa-solid fa-chart-bar"></i> Reports</a>
+    <a href="#" class="nl"><i class="fa-solid fa-gear"></i> Settings</a>
+    <a href="#" class="nl"><i class="fa-regular fa-circle-user"></i> My Profile</a>
+  </div>
+</nav>
+
+<!-- EMERGENCY BANNER -->
+<div class="emrg-banner">
+  <div class="emrg-banner-inner">
+    <div class="eb-num">103</div>
+    <div class="eb-divider"></div>
+    <div class="eb-text">
+      <h3>ट्राफिक इमर्जेन्सी &nbsp;—&nbsp; Traffic Emergency Helpline</h3>
+      <p>Accident, road block, or any traffic emergency? Call free, 24 hours a day, 7 days a week.</p>
+    </div>
+    <a href="tel:103" class="eb-call"><i class="fa-solid fa-phone"></i> Call 103 Now</a>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-lbl"><i class="fa-solid fa-circle"></i> Live Updates</div>
+  <div class="ticker-track">
+    <div class="ticker-scroll">
+      <span class="ti">Pulchowk–Lagankhel road: maintenance in progress, expect delays on southbound lane</span>
+      <span class="ti">Ring Road no-vehicle ban lifted from 10:00 AM today — all vehicles permitted</span>
+      <span class="ti">Free road safety awareness camp at Chabahil — 2082-08-25 at 10:00 AM</span>
+      <span class="ti">Traffic Helpline 103 is available 24 hours a day, every day of the week</span>
+      <span class="ti">New one-way system at New Baneshwor junction effective from Baisakh 1, 2082</span>
+      <span class="ti">Pulchowk–Lagankhel road: maintenance in progress, expect delays on southbound lane</span>
+      <span class="ti">Ring Road no-vehicle ban lifted from 10:00 AM today — all vehicles permitted</span>
+      <span class="ti">Free road safety awareness camp at Chabahil — 2082-08-25 at 10:00 AM</span>
+      <span class="ti">Traffic Helpline 103 is available 24 hours a day, every day of the week</span>
+      <span class="ti">New one-way system at New Baneshwor junction effective from Baisakh 1, 2082</span>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-img-strip">
+    <img src="https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=1600&q=85" alt="Kathmandu traffic">
+    <div class="hero-overlay"></div>
+    <div class="hero-copy">
+      <div class="hero-kicker"><i class="fa-solid fa-shield-halved"></i> सुरक्षित सडक, सुरक्षित जीवन</div>
+      <h1 class="hero-h1">सुरक्षित सडकको लागि<br>हामी सधैँ तपाईंसँग छौं</h1>
+      <div class="hero-h1-en">Safe Roads. Safe Lives.<br>Kathmandu Valley Traffic Police.</div>
+      <p class="hero-desc">Report violations, check fines, find lost vehicles and documents, and access all traffic police services — quickly and easily, from one place.</p>
+      <div class="hero-btns">
+        <a href="#services" class="hbtn-main"><i class="fa-solid fa-grid-2"></i> View All Services</a>
+        <a href="tel:103" class="hbtn-sec"><i class="fa-solid fa-phone"></i> Call Helpline 103</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Services Bar -->
+  <div class="quick-svcs">
+    <div class="qs-inner">
+      <div class="qs-item">
+        <div class="qs-icon qi-b"><i class="fa-solid fa-car-burst"></i></div>
+        <div class="qs-label">Report Lost<br>Vehicle</div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-icon qi-g"><i class="fa-regular fa-folder-open"></i></div>
+        <div class="qs-label">Lost Document<br>Application</div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-icon qi-r"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="qs-label">Check &amp; Pay<br>Fines</div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-icon qi-gr"><i class="fa-solid fa-person-chalkboard"></i></div>
+        <div class="qs-label">Awareness<br>Class</div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-icon qi-n"><i class="fa-solid fa-file-shield"></i></div>
+        <div class="qs-label">Character<br>Certificate</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE BODY -->
+<div class="page">
+
+  <!-- SERVICES -->
+  <div id="services">
+    <div class="sh reveal">
+      <div class="sh-tag"><i class="fa-solid fa-hand-holding-heart"></i> Citizen Services</div>
+      <h2>What can we help you with today?</h2>
+      <p>All the services you need from the Kathmandu Valley Traffic Police — available online, anytime.</p>
+    </div>
+    <div class="svcs-grid">
+      <div class="svc-card sc-b reveal">
+        <div class="svc-img"><img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0729?w=200&q=80" alt="Lost Vehicle"></div>
+        <div class="svc-name">Lost Vehicle Application</div>
+        <div class="svc-desc">Report a missing or stolen vehicle. Track the status of your report online without visiting the office.</div>
+        <div class="svc-link">Apply Online <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+      <div class="svc-card sc-g reveal d1">
+        <div class="svc-icon" style="background:var(--gold-pale);color:var(--gold)"><i class="fa-regular fa-folder-open"></i></div>
+        <div class="svc-name">Lost Document Application</div>
+        <div class="svc-desc">Lost your driving license or blue book? File a report online and receive acknowledgement instantly.</div>
+        <div class="svc-link">Apply Online <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+      <div class="svc-card sc-r reveal d2">
+        <div class="svc-img"><img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=200&q=80" alt="Fines"></div>
+        <div class="svc-name">Traffic Violations & Fines</div>
+        <div class="svc-desc">Check outstanding fines by number plate. View your violation history and pay securely online.</div>
+        <div class="svc-link">Check Fines <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+      <div class="svc-card sc-gr reveal d3">
+        <div class="svc-icon" style="background:var(--green-pale);color:var(--green)"><i class="fa-solid fa-person-chalkboard"></i></div>
+        <div class="svc-name">Awareness Classes</div>
+        <div class="svc-desc">Register for free road safety training programs held regularly across wards in Kathmandu Valley.</div>
+        <div class="svc-link">Register Now <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="about-strip reveal">
+    <div class="about-copy">
+      <div class="about-tag"><i class="fa-solid fa-shield-halved"></i> Our Commitment</div>
+      <h2>Making every road in Kathmandu <span>safer for everyone</span></h2>
+      <p>The Kathmandu Valley Traffic Police keeps over 4 million residents safe through active patrol, community awareness, and technology-assisted enforcement at more than 120 junctions across the valley.</p>
+      <div class="about-stats">
+        <div class="as"><div class="as-num">120+</div><div class="as-lbl">Monitored Junctions</div></div>
+        <div class="as"><div class="as-num">24/7</div><div class="as-lbl">Emergency Response</div></div>
+        <div class="as"><div class="as-num">47K</div><div class="as-lbl">Violations Processed</div></div>
+      </div>
+    </div>
+    <div class="about-photo">
+      <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=80" alt="Police officers">
+    </div>
+  </div>
+
+  <!-- NEWS -->
+  <div class="sh reveal">
+    <div class="sh-tag"><i class="fa-regular fa-newspaper"></i> Latest News</div>
+    <h2>News & Updates</h2>
+    <p>Stay informed with the latest announcements, programs, and traffic updates from the office.</p>
+  </div>
+  <div class="news-layout reveal">
+    <div class="news-featured">
+      <div class="nf-img">
+        <img src="https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?w=900&q=80" alt="Awareness">
+        <span class="nf-cat">Program</span>
+      </div>
+      <div class="nf-body">
+        <div class="nf-date"><i class="fa-regular fa-calendar"></i> 2082-08-19 &nbsp;·&nbsp; Kathmandu</div>
+        <div class="nf-title">"Road Accident Reduction Awareness Program Successfully Completed"</div>
+        <div class="nf-desc">The Traffic Police concluded its month-long road safety campaign, reaching over 12,000 citizens across 14 wards with training on helmet use, pedestrian rights, and safe overtaking.</div>
+        <div class="nf-rm">Read Full Story <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+    </div>
+    <div class="news-list">
+      <div class="nc-card">
+        <div class="nc-accent"></div>
+        <div class="nc-thumb"><img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=200&q=70" alt=""></div>
+        <div class="nc-body">
+          <div class="nc-cat">Traffic Alert</div>
+          <div class="nc-title">Heavy Congestion at Ring Road — Morning Update</div>
+          <div class="nc-date"><i class="fa-regular fa-calendar"></i> 2082-05-23</div>
+        </div>
+      </div>
+      <div class="nc-card">
+        <div class="nc-accent"></div>
+        <div class="nc-thumb"><img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&q=70" alt=""></div>
+        <div class="nc-body">
+          <div class="nc-cat">Event</div>
+          <div class="nc-title">Discussion Program with Retired Senior Police Officials</div>
+          <div class="nc-date"><i class="fa-regular fa-calendar"></i> 2082-05-04</div>
+        </div>
+      </div>
+      <div class="nc-card">
+        <div class="nc-accent"></div>
+        <div class="nc-thumb"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=200&q=70" alt=""></div>
+        <div class="nc-body">
+          <div class="nc-cat">Publication</div>
+          <div class="nc-title">Traffic Mirror — Volume XII, Issue 4 Now Available</div>
+          <div class="nc-date"><i class="fa-regular fa-calendar"></i> 2082-04-15</div>
+        </div>
+      </div>
+      <div class="nc-card">
+        <div class="nc-accent"></div>
+        <div class="nc-thumb"><img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=200&q=70" alt=""></div>
+        <div class="nc-body">
+          <div class="nc-cat">Notice</div>
+          <div class="nc-title">Revised Fines & Penalties Schedule Effective from 2082 Baisakh</div>
+          <div class="nc-date"><i class="fa-regular fa-calendar"></i> 2082-03-30</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CITIZEN SERVICES -->
+  <div class="cit-section reveal">
+    <div class="sh" style="margin-bottom:0">
+      <div class="sh-tag"><i class="fa-solid fa-users"></i> More Services</div>
+      <h2>Everything you need, in one place</h2>
+      <p>From certificates to complaints — access all traffic police services online, without leaving home.</p>
+    </div>
+    <div class="cit-grid">
+      <div class="cit-card">
+        <div class="ci-head">
+          <div class="ci-ico cii-b"><i class="fa-solid fa-file-shield"></i></div>
+          <div class="cit-name">Character Certificate</div>
+        </div>
+        <div class="cit-desc">Apply for a traffic police character certificate needed for employment, passport, or visa applications.</div>
+        <div class="cit-lnk">Apply Now <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+      <div class="cit-card">
+        <div class="ci-head">
+          <div class="ci-ico cii-g"><i class="fa-solid fa-download"></i></div>
+          <div class="cit-name">Downloads & Forms</div>
+        </div>
+        <div class="cit-desc">Download application forms, traffic rule booklets, fine schedules, and official circulars in Nepali or English.</div>
+        <div class="cit-lnk">Browse Downloads <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+      <div class="cit-card">
+        <div class="ci-head">
+          <div class="ci-ico cii-r"><i class="fa-solid fa-circle-exclamation"></i></div>
+          <div class="cit-name">File a Complaint</div>
+        </div>
+        <div class="cit-desc">Report officer misconduct, a road hazard, or a broken traffic signal directly through our online form.</div>
+        <div class="cit-lnk">Submit Complaint <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+      <div class="cit-card">
+        <div class="ci-head">
+          <div class="ci-ico cii-gr"><i class="fa-solid fa-traffic-light"></i></div>
+          <div class="cit-name">Know Traffic Rules</div>
+        </div>
+        <div class="cit-desc">Read Nepal's official traffic rules, road signs guide, speed limits by zone, and helmet law requirements.</div>
+        <div class="cit-lnk">Read Rules <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+      <div class="cit-card">
+        <div class="ci-head">
+          <div class="ci-ico cii-n"><i class="fa-solid fa-chart-bar"></i></div>
+          <div class="cit-name">Monthly Accident Report</div>
+        </div>
+        <div class="cit-desc">Download the latest monthly accident and violation statistics report published by the traffic police office.</div>
+        <div class="cit-lnk">Download Report <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+      <div class="cit-card">
+        <div class="ci-head">
+          <div class="ci-ico cii-t"><i class="fa-solid fa-map-location-dot"></i></div>
+          <div class="cit-name">Junction Locations</div>
+        </div>
+        <div class="cit-desc">Find the nearest traffic police post, office location, or camera junction across the Kathmandu Valley.</div>
+        <div class="cit-lnk">View Map <i class="fa-solid fa-arrow-right"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OFFICER + HELPLINE -->
+  <div class="pair-row">
+    <div class="officer-card reveal">
+      <div class="oc-hdr"><i class="fa-solid fa-user-shield"></i> Office In-Charge</div>
+      <div class="oc-body">
+        <div class="oc-photo">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=220&q=80" alt="SSP Officer">
+          <div class="oc-badge-pin"><i class="fa-solid fa-star"></i></div>
+        </div>
+        <div class="oc-name">SSP Raj Kumar Shrestha</div>
+        <div class="oc-rank">Senior Superintendent of Police</div>
+        <div class="oc-dept">Kathmandu Valley Traffic Police Office</div>
+        <div class="oc-quote">"Our goal is zero road fatalities. Every officer works each day to make the valley's roads safer for all residents and visitors."</div>
+      </div>
+    </div>
+    <div class="helpline-card reveal d1">
+      <div class="hl-icon-ring"><i class="fa-solid fa-phone-volume"></i></div>
+      <div class="hl-label">24 / 7 Traffic Helpline</div>
+      <div class="hl-num">103</div>
+      <div class="hl-sub">Free to call &nbsp;·&nbsp; Every day, all day</div>
+      <a href="tel:103" class="hl-btn"><i class="fa-solid fa-phone"></i> Call Now</a>
+      <div class="hl-note">Accidents &nbsp;·&nbsp; Road Blocks &nbsp;·&nbsp; Emergencies</div>
+    </div>
+  </div>
+
+  <!-- NOTICES + APP -->
+  <div class="bot-row">
+    <div class="notices-card reveal">
+      <div class="nc-hdr"><i class="fa-solid fa-star"></i> Important Notices</div>
+      <div class="ni-row">
+        <div class="ni-box" style="background:var(--gold-pale)"><i class="fa-regular fa-file-lines" style="color:var(--gold)"></i></div>
+        <div>
+          <div class="ni-title-txt">Updated Traffic Rules 2082 — Read the Full Circular</div>
+          <div class="ni-meta"><i class="fa-regular fa-clock"></i> 2082-08-15 &nbsp;·&nbsp; Circular No. 41</div>
+        </div>
+        <i class="fa-solid fa-chevron-right ni-chev"></i>
+      </div>
+      <div class="ni-row">
+        <div class="ni-box" style="background:var(--red-pale)"><i class="fa-solid fa-scale-balanced" style="color:var(--red)"></i></div>
+        <div>
+          <div class="ni-title-txt">Revised Fines & Penalties Schedule — Effective Immediately</div>
+          <div class="ni-meta"><i class="fa-regular fa-clock"></i> 2082-07-01 &nbsp;·&nbsp; All Vehicle Types</div>
+        </div>
+        <i class="fa-solid fa-chevron-right ni-chev"></i>
+      </div>
+      <div class="ni-row">
+        <div class="ni-box" style="background:var(--green-pale)"><i class="fa-regular fa-folder" style="color:var(--green)"></i></div>
+        <div>
+          <div class="ni-title-txt">Documents Required for Vehicle Registration — Guidelines</div>
+          <div class="ni-meta"><i class="fa-regular fa-clock"></i> 2082-06-20 &nbsp;·&nbsp; Official Guidelines</div>
+        </div>
+        <i class="fa-solid fa-chevron-right ni-chev"></i>
+      </div>
+      <div class="ni-row">
+        <div class="ni-box" style="background:var(--blue-pale)"><i class="fa-solid fa-road-barrier" style="color:var(--blue)"></i></div>
+        <div>
+          <div class="ni-title-txt">Road Closure Notice — Pulchowk Sector Until Further Notice</div>
+          <div class="ni-meta"><i class="fa-regular fa-clock"></i> 2082-08-18 &nbsp;·&nbsp; Maintenance Work</div>
+        </div>
+        <i class="fa-solid fa-chevron-right ni-chev"></i>
+      </div>
+      <div class="ni-row">
+        <div class="ni-box" style="background:var(--bg2)"><i class="fa-solid fa-person-chalkboard" style="color:var(--navy)"></i></div>
+        <div>
+          <div class="ni-title-txt">Free Awareness Class — Chabahil, 2082-08-25</div>
+          <div class="ni-meta"><i class="fa-regular fa-clock"></i> 2082-08-10 &nbsp;·&nbsp; Open Registration</div>
+        </div>
+        <i class="fa-solid fa-chevron-right ni-chev"></i>
+      </div>
+    </div>
+
+    <div class="app-promo reveal d1">
+      <div class="ap-img">
+        <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=700&q=80" alt="Mobile App">
+      </div>
+      <div class="ap-body">
+        <div class="ap-tag"><i class="fa-solid fa-mobile-screen-button"></i> Official Mobile App</div>
+        <div class="ap-h">Traffic Police — Now in your pocket</div>
+        <div class="ap-desc">Check fines, report violations, receive live traffic alerts, and reach the 103 helpline directly from your phone. Free on iOS and Android.</div>
+        <div class="store-btns">
+          <a href="#" class="s-btn">
+            <i class="fa-brands fa-apple"></i>
+            <div><span class="s-sub">Download on the</span><span class="s-main">App Store</span></div>
+          </a>
+          <a href="#" class="s-btn">
+            <i class="fa-brands fa-google-play"></i>
+            <div><span class="s-sub">Get it on</span><span class="s-main">Google Play</span></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft">
+    <div>
+      <div class="ft-logo">
+        <div class="ft-logo-mark"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="ft-logo-txt">
+          काठमाण्डौ उपत्यका ट्राफिक प्रहरी कार्यालय
+          <span>Kathmandu Valley Traffic Police Office</span>
+        </div>
+      </div>
+      <div class="ft-div"></div>
+      <p>We are committed to making the roads of Kathmandu Valley safe, organized, and accessible for every resident through active enforcement, education, and community engagement.</p>
+    </div>
+    <div>
+      <h4>About Us</h4>
+      <ul class="ft-list">
+        <li><i class="fa-solid fa-chevron-right"></i> Introduction</li>
+        <li><i class="fa-solid fa-chevron-right"></i> History</li>
+        <li><i class="fa-solid fa-chevron-right"></i> Our Mission</li>
+        <li><i class="fa-solid fa-chevron-right"></i> Organization</li>
+        <li><i class="fa-solid fa-chevron-right"></i> Traffic Units</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Services</h4>
+      <ul class="ft-list">
+        <li><i class="fa-solid fa-chevron-right"></i> Traffic Helpline</li>
+        <li><i class="fa-solid fa-chevron-right"></i> Lost Vehicle</li>
+        <li><i class="fa-solid fa-chevron-right"></i> Lost Document</li>
+        <li><i class="fa-solid fa-chevron-right"></i> Character Certificate</li>
+        <li><i class="fa-solid fa-chevron-right"></i> Downloads</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact Information</h4>
+      <div class="ft-ci">
+        <div class="ft-ci-ico"><i class="fa-solid fa-location-dot"></i></div>
+        <div class="ft-ci-txt"><strong>Kathmandu Valley Traffic Police Office</strong>Ramshahpath, Kathmandu, Nepal</div>
+      </div>
+      <div class="ft-ci">
+        <div class="ft-ci-ico"><i class="fa-solid fa-phone-volume"></i></div>
+        <div class="ft-ci-txt"><strong>Traffic Control: 103</strong>+977-01-5319641</div>
+      </div>
+      <div class="ft-ci">
+        <div class="ft-ci-ico"><i class="fa-regular fa-envelope"></i></div>
+        <div class="ft-ci-txt">vtpo@nepalpolice.gov.np</div>
+      </div>
+    </div>
+  </div>
+  <div class="ft-bot">
+    <div>&copy; 2082 B.S. &nbsp;·&nbsp; Nepal Police — Kathmandu Valley Traffic Police Office. All Rights Reserved.</div>
+    <div><i class="fa-regular fa-eye"></i> Page Visits: <span class="visit-num">1,47,382</span></div>
+  </div>
+</footer>
+
+<script>
+// Language toggle
+document.querySelectorAll('.lbtn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.lbtn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+  });
+});
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
