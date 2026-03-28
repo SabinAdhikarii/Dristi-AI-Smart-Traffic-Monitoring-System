@@ -1,0 +1,787 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+:root {
+  --navy: #0c1c38;
+  --navy-mid: #152d58;
+  --blue: #1a56a0;
+  --blue-light: #2572c8;
+  --gold: #b8860b;
+  --gold-bright: #d4a017;
+  --red: #a81c1c;
+  --red-mid: #dc2626;
+  --orange: #c2570a;
+  --green: #15643c;
+  --green-mid: #16a34a;
+  --bg: #eef1f8;
+  --bg2: #e4e9f4;
+  --white: #ffffff;
+  --border: #cdd4e6;
+  --border-light: #dde3f0;
+  --text: #18243c;
+  --muted: #5a6479;
+  --sh1: 0 1px 4px rgba(12,28,56,0.07);
+  --sh2: 0 4px 18px rgba(12,28,56,0.12);
+  --r: 5px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.65}
+a{text-decoration:none;color:inherit}
+button,input,select,textarea{font-family:'DM Sans',sans-serif}
+
+.util{background:var(--navy);padding:5px 0;font-size:11.5px;color:rgba(255,255,255,.6)}
+.util-inner{max-width:1240px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;align-items:center}
+.util-left{display:flex;align-items:center;gap:6px}
+.util-left i{font-size:10px;color:var(--gold-bright)}
+.lang-wrap{display:flex;gap:4px}
+.lang-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);padding:2px 11px;cursor:pointer;font-size:11px;border-radius:2px}
+.lang-btn.active,.lang-btn:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
+
+header{background:var(--white);border-bottom:3px solid var(--gold);box-shadow:var(--sh2);position:sticky;top:0;z-index:200}
+.hdr{max-width:1240px;margin:0 auto;padding:13px 28px;display:flex;align-items:center;gap:18px}
+.logo-fallback{width:68px;height:68px;border-radius:50%;border:3px solid var(--gold);background:linear-gradient(145deg,var(--navy) 0%,var(--navy-mid) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.logo-fallback i{font-size:22px;color:var(--gold-bright);margin-bottom:3px}
+.logo-fallback span{font-size:8px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.7);text-transform:uppercase}
+.hdr-title{flex:1}
+.hdr-title h1{font-family:'Noto Sans Devanagari',sans-serif;font-size:22px;font-weight:900;color:var(--navy);line-height:1.2}
+.hdr-title .en{font-size:12.5px;color:var(--muted);margin-top:3px}
+.hdr-title .loc{font-size:11.5px;color:var(--blue);margin-top:4px;display:flex;align-items:center;gap:5px}
+.emrg{background:var(--navy);border-left:4px solid var(--gold);padding:13px 18px;border-radius:var(--r);min-width:205px}
+.emrg-lbl{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-bright);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.emrg-row{font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.9;display:flex;align-items:center;gap:7px}
+.emrg-num{font-weight:700;color:#fff}
+
+nav{background:linear-gradient(90deg,var(--navy-mid),var(--navy));border-bottom:2px solid var(--gold)}
+.nav-inner{max-width:1240px;margin:0 auto;display:flex;padding:0 18px}
+.nav-link{color:rgba(255,255,255,.78);padding:14px 20px;font-size:12.5px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;position:relative;transition:color .2s;display:flex;align-items:center;gap:7px}
+.nav-link i{font-size:12px;opacity:.75}
+.nav-link::after{content:'';position:absolute;bottom:0;left:50%;right:50%;height:3px;background:var(--gold-bright);transition:left .25s,right .25s}
+.nav-link:hover,.nav-link.active{color:#fff}
+.nav-link:hover::after,.nav-link.active::after{left:0;right:0}
+
+.page-hero{background:linear-gradient(105deg,var(--navy) 0%,var(--navy-mid) 60%,#1e3d6e 100%);padding:36px 0;border-bottom:3px solid var(--gold)}
+.page-hero-inner{max-width:1240px;margin:0 auto;padding:0 28px}
+.page-hero-inner h2{font-family:'Libre Baskerville',serif;font-size:30px;font-weight:700;color:#fff;margin-bottom:8px}
+.page-hero-inner p{font-size:14px;color:rgba(255,255,255,.7);max-width:600px}
+.page-hero-breadcrumb{display:flex;align-items:center;gap:7px;font-size:11.5px;color:rgba(255,255,255,.5);margin-bottom:16px}
+.page-hero-breadcrumb a{color:rgba(255,255,255,.65)}
+.page-hero-breadcrumb a:hover{color:var(--gold-bright)}
+.page-hero-breadcrumb .cur{color:var(--gold-bright);font-weight:600}
+
+.page{max-width:1240px;margin:32px auto;padding:0 28px}
+
+.sec-hdr{display:flex;align-items:center;gap:11px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border-light)}
+.sec-hdr-icon{width:34px;height:34px;background:var(--navy);border-radius:4px;display:flex;align-items:center;justify-content:center}
+.sec-hdr-icon i{font-size:14px;color:var(--gold-bright)}
+.sec-hdr-title{font-family:'Libre Baskerville',serif;font-size:18px;font-weight:700;color:var(--navy)}
+
+.how-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:26px 28px;margin-bottom:26px;box-shadow:var(--sh1)}
+.how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:4px;position:relative}
+.how-steps::before{content:'';position:absolute;top:22px;left:calc(12.5% + 11px);right:calc(12.5% + 11px);height:2px;background:var(--border-light);z-index:0}
+.step{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 16px;position:relative;z-index:1}
+.step-num{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--gold-bright);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:3px solid var(--white);box-shadow:0 0 0 2px var(--navy)}
+.step-icon{font-size:18px;color:var(--muted);margin-bottom:8px}
+.step-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:5px}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.6}
+
+.upload-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:28px;margin-bottom:26px;box-shadow:var(--sh1)}
+
+.drop-zone{border:2px dashed var(--border);border-radius:var(--r);padding:52px 30px;text-align:center;background:var(--bg);cursor:pointer;transition:all .25s;margin-bottom:20px}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--blue);background:#f0f5ff}
+.dz-icon{width:64px;height:64px;background:var(--bg2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.dz-icon i{font-size:26px;color:var(--blue)}
+.dz-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:7px}
+.dz-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.dz-btn{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:11px 24px;font-size:13px;font-weight:700;border-radius:3px;border:none;cursor:pointer}
+.dz-btn:hover{background:var(--blue)}
+.dz-formats{font-size:11.5px;color:var(--muted);margin-top:16px}
+#fileInput{display:none}
+
+.file-selected{border:1px solid var(--green-mid);border-radius:var(--r);background:#f0fdf4;padding:14px 18px;margin-bottom:20px;display:none}
+.file-selected.show{display:flex}
+.file-selected-inner{display:flex;align-items:center;gap:14px;width:100%}
+.file-icon-box{width:48px;height:48px;background:var(--white);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center}
+.file-icon-box i{font-size:22px;color:var(--blue)}
+.file-meta{flex:1}
+.file-name{font-weight:700;color:var(--navy);font-size:14px;margin-bottom:3px}
+.file-info{font-size:12px;color:var(--muted)}
+.file-remove{background:var(--red);color:#fff;border:none;padding:7px 14px;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
+.file-remove:hover{background:#8f1616}
+
+.upload-progress{display:none;margin-bottom:20px}
+.upload-progress.show{display:block}
+.prog-label{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.prog-track{height:8px;background:var(--bg2);border-radius:10px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-light));border-radius:10px;width:0%;transition:width .4s ease}
+
+/* ===== LIVE STREAM PANEL ===== */
+.live-panel{display:none;margin-top:20px;background:#0a0f1e;border-radius:var(--r);overflow:hidden;border:2px solid var(--navy-mid);box-shadow:var(--sh2)}
+.live-panel.show{display:block}
+
+.live-header{background:var(--navy);padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+.live-badge{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px}
+.live-dot{width:9px;height:9px;border-radius:50%;background:#ef4444;animation:pulse-dot 1.2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.live-stats{display:flex;gap:20px}
+.live-stat{font-size:12px;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:6px}
+.live-stat strong{color:#fff;font-size:13px}
+.live-stat .viol-count{color:#f87171;font-weight:700}
+
+.canvas-wrap{position:relative;background:#000;line-height:0}
+#liveCanvas{width:100%;max-height:500px;object-fit:contain;display:block}
+.canvas-overlay{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.65);border-radius:4px;padding:6px 12px;font-size:12px;color:#fff;display:flex;align-items:center;gap:6px;backdrop-filter:blur(4px)}
+
+.analysis-prog-bar{height:4px;background:rgba(255,255,255,.1)}
+.analysis-prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-bright));width:0%;transition:width .5s ease}
+
+.live-footer{padding:14px 18px;background:var(--navy-mid);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.live-footer-msg{font-size:12.5px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:7px}
+.live-footer-msg i{color:var(--gold-bright)}
+
+/* ===== COMPLETE PANEL ===== */
+.complete-panel{display:none;margin-top:20px;background:var(--white);border-radius:var(--r);padding:24px;border:1px solid var(--border);text-align:center}
+.complete-panel.show{display:block}
+.complete-icon{width:64px;height:64px;border-radius:50%;background:#f0fdf4;border:2px solid var(--green-mid);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.complete-icon i{font-size:28px;color:var(--green-mid)}
+.complete-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.complete-sub{font-size:14px;color:var(--muted);margin-bottom:22px}
+.complete-stats{display:flex;justify-content:center;gap:32px;margin-bottom:24px}
+.cstat{text-align:center}
+.cstat-val{font-size:28px;font-weight:700;color:var(--navy)}
+.cstat-val.red{color:var(--red-mid)}
+.cstat-lbl{font-size:12px;color:var(--muted);margin-top:2px}
+.result-buttons{display:flex;gap:15px;justify-content:center;margin-top:4px;flex-wrap:wrap}
+.btn{padding:10px 22px;border-radius:4px;font-weight:700;display:inline-flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;border:none;font-size:13px}
+.btn-primary{background:var(--blue);color:white}
+.btn-primary:hover{background:var(--navy)}
+.btn-secondary{background:var(--navy);color:white}
+.btn-secondary:hover{background:var(--blue)}
+
+.form-divider{border-top:1px dashed var(--border);margin:24px 0;padding-top:24px}
+.form-divider-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:20px;display:flex;align-items:center;gap:9px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:7px}
+.form-label .req{color:var(--red);margin-left:3px}
+.form-control{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:3px;font-size:14px;color:var(--text);background:var(--white);outline:none}
+.form-control:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,114,200,.1)}
+textarea.form-control{resize:vertical;min-height:90px}
+
+.submit-row{display:flex;align-items:center;justify-content:space-between;padding-top:22px;border-top:1px dashed var(--border);margin-top:6px;flex-wrap:wrap;gap:14px}
+.submit-note{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.btn-analyze{display:inline-flex;align-items:center;gap:10px;background:var(--navy);color:#fff;padding:14px 38px;font-size:14px;font-weight:700;border-radius:3px;border:2px solid var(--navy);cursor:pointer}
+.btn-analyze:hover{background:transparent;color:var(--navy)}
+.btn-analyze:disabled{opacity:0.6;cursor:not-allowed}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .8s linear infinite;display:inline-block}
+
+.recent-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-top:26px;overflow:hidden}
+.recent-header{padding:16px 20px;background:var(--navy);color:white;display:flex;align-items:center;gap:10px}
+.recent-header h3{font-size:15px;font-weight:700;margin:0}
+.recent-list{padding:0}
+.recent-item{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border-light);cursor:pointer}
+.recent-item:hover{background:var(--bg)}
+.recent-item:last-child{border-bottom:none}
+.recent-filename{font-weight:600;color:var(--navy);margin-bottom:4px}
+.recent-meta{font-size:12px;color:var(--muted)}
+.recent-badge{background:#fee2e2;color:var(--red-mid);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.empty-recent{padding:40px;text-align:center;color:var(--muted)}
+
+footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba(255,255,255,.75);margin-top:10px}
+.ft{max-width:1240px;margin:0 auto;padding:44px 28px 34px;display:grid;grid-template-columns:1.7fr 1fr 1fr 1.5fr;gap:40px}
+.ft-brand-name{font-family:'Noto Sans Devanagari',sans-serif;font-size:15px;font-weight:700;color:#fff}
+.ft-brand-en{font-size:11px;color:rgba(255,255,255,.45)}
+.ft-divider{width:36px;height:2px;background:var(--gold);border-radius:2px;margin:14px 0}
+.ft-logo-fb{width:52px;height:52px;border-radius:50%;border:2px solid var(--gold);background:var(--navy-mid);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.ft-logo-fb i{font-size:20px;color:var(--gold-bright)}
+.ft-col h4{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:var(--gold-bright);margin-bottom:15px}
+.ft-list{list-style:none}
+.ft-list li{padding:7px 0;font-size:12.5px;border-bottom:1px solid rgba(255,255,255,.07);cursor:pointer;display:flex;align-items:center;gap:8px}
+.ft-list li i{font-size:10px;color:var(--gold)}
+.ft-list li:hover{color:#fff;padding-left:4px}
+.ft-contact .ci{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:12.5px}
+.ci-icon{width:28px;height:28px;background:rgba(255,255,255,.08);border-radius:4px;display:flex;align-items:center;justify-content:center}
+.ci-icon i{font-size:12px;color:var(--gold-bright)}
+.ci-text strong{color:#fff;display:block}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.09);padding:14px 28px;display:flex;justify-content:space-between;align-items:center;max-width:1240px;margin:0 auto;font-size:11.5px}
+.visit-num{background:rgba(255,255,255,.09);padding:2px 10px;border-radius:20px;font-weight:700;color:var(--gold-bright)}
+.disclaimer-bar{background:#fffbeb;border-top:2px solid var(--gold);padding:12px 28px;font-size:12px;color:#6b4800;display:flex;align-items:center;gap:10px}
+
+.hidden{display:none!important}
+.fade-in{animation:fadeIn .5s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+</style>
+
+<div class="util">
+  <div class="util-inner">
+    <div class="util-left">
+      <i class="fa-regular fa-calendar-days"></i>
+      <span id="currentDate"></span>
+    </div>
+    <div class="lang-wrap">
+      <button class="lang-btn active">नेपाली</button>
+      <button class="lang-btn">EN</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="hdr">
+    <div class="logo-fallback">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>Nepal Police</span>
+    </div>
+    <div class="hdr-title">
+      <h1>काठमाण्डौ उपत्यका ट्राफिक प्रहरी कार्यालय</h1>
+      <div class="en">Kathmandu Valley Traffic Police Office</div>
+      <div class="loc"><i class="fa-solid fa-location-dot"></i> रामशाहपथ, काठमाडौं, नेपाल</div>
+    </div>
+    <div class="emrg">
+      <div class="emrg-lbl"><i class="fa-solid fa-triangle-exclamation"></i> Emergency Contacts</div>
+      <div class="emrg-row"><i class="fa-solid fa-phone"></i> Traffic Control: <span class="emrg-num">103</span></div>
+      <div class="emrg-row"><i class="fa-solid fa-phone-volume"></i> +977-01-5319641</div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <a href="{{ url_for('index') }}" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="{{ url_for('news') }}" class="nav-link"><i class="fa-regular fa-newspaper"></i> News</a>
+    <a href="{{ url_for('upload_video') }}" class="nav-link active"><i class="fa-solid fa-video"></i> Upload Videos</a>
+    <a href="{{ url_for('reports') }}" class="nav-link"><i class="fa-solid fa-chart-bar"></i> Reports</a>
+    <a href="{{ url_for('settings') }}" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
+    <a href="{{ url_for('profile') }}" class="nav-link"><i class="fa-regular fa-circle-user"></i> My Profile</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-hero-breadcrumb">
+      <a href="{{ url_for('index') }}">Home</a>
+      <i class="fa-solid fa-chevron-right"></i>
+      <span class="cur">Upload Videos</span>
+    </div>
+    <h2>Upload Traffic Video Footage</h2>
+    <p>Submit traffic camera recordings for automated analysis — violation detection, vehicle counts, speed monitoring, and compliance reporting across Kathmandu Valley.</p>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="how-panel fade-in">
+    <div class="sec-hdr">
+      <div class="sec-hdr-icon"><i class="fa-solid fa-circle-info"></i></div>
+      <div class="sec-hdr-title">How It Works</div>
+    </div>
+    <div class="how-steps">
+      <div class="step"><div class="step-num">1</div><i class="fa-solid fa-cloud-arrow-up step-icon"></i><div class="step-title">Upload Video</div><div class="step-desc">Select a traffic footage file — MP4, AVI, MOV or MKV up to 500 MB</div></div>
+      <div class="step"><div class="step-num">2</div><i class="fa-solid fa-file-pen step-icon"></i><div class="step-title">Provide Details</div><div class="step-desc">Enter location, date, time, and camera ID</div></div>
+      <div class="step"><div class="step-num">3</div><i class="fa-solid fa-microchip step-icon"></i><div class="step-title">Live AI Analysis</div><div class="step-desc">Watch detections appear in real-time as the video processes</div></div>
+      <div class="step"><div class="step-num">4</div><i class="fa-solid fa-chart-column step-icon"></i><div class="step-title">Review Results</div><div class="step-desc">Export the full violation report when processing completes</div></div>
+    </div>
+  </div>
+
+  <div class="upload-card fade-in">
+    <div class="sec-hdr">
+      <div class="sec-hdr-icon"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+      <div class="sec-hdr-title">Upload Traffic Footage</div>
+    </div>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+
+      <!-- Drop zone -->
+      <div class="drop-zone" id="dropZone">
+        <div class="dz-icon"><i class="fa-solid fa-film"></i></div>
+        <div class="dz-title">Drag and drop your video file here</div>
+        <div class="dz-sub">or click the button below to browse from your device</div>
+        <button type="button" class="dz-btn" onclick="document.getElementById('fileInput').click()">
+          <i class="fa-solid fa-folder-open"></i> Browse Files
+        </button>
+        <div class="dz-formats">Accepted formats: MP4, AVI, MOV, MKV · Maximum file size: 500 MB</div>
+        <input type="file" id="fileInput" name="video_file" accept="video/*">
+      </div>
+
+      <!-- File selected preview -->
+      <div class="file-selected" id="fileSelected">
+        <div class="file-selected-inner">
+          <div class="file-icon-box"><i class="fa-solid fa-file-video"></i></div>
+          <div class="file-meta">
+            <div class="file-name" id="fileName"></div>
+            <div class="file-info" id="fileInfo"></div>
+          </div>
+          <button type="button" class="file-remove" id="removeFile"><i class="fa-solid fa-xmark"></i> Remove</button>
+        </div>
+      </div>
+
+      <!-- Upload progress bar -->
+      <div class="upload-progress" id="uploadProgress">
+        <div class="prog-label">
+          <span><i class="fa-solid fa-circle-notch spin"></i> Uploading...</span>
+          <span id="progPct">0%</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+      </div>
+
+      <!-- ===== LIVE STREAM PANEL ===== -->
+      <div class="live-panel" id="livePanel">
+        <div class="live-header">
+          <div class="live-badge">
+            <span class="live-dot"></span>
+            Live Analysis
+          </div>
+          <div class="live-stats">
+            <div class="live-stat">
+              Progress: <strong id="liveProgress">0%</strong>
+            </div>
+            <div class="live-stat">
+              Violations: <strong class="viol-count" id="liveViolations">detecting…</strong>
+            </div>
+            <div class="live-stat" id="liveFPS" style="display:none">
+              <strong id="liveFPSVal">—</strong> fps
+            </div>
+          </div>
+        </div>
+
+        <div class="analysis-prog-bar">
+          <div class="analysis-prog-fill" id="analysisProg"></div>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas id="liveCanvas"></canvas>
+          <div class="canvas-overlay">
+            <i class="fa-solid fa-circle-notch spin" style="font-size:11px"></i>
+            <span id="canvasStatus">Waiting for frames…</span>
+          </div>
+        </div>
+
+        <div class="live-footer">
+          <div class="live-footer-msg">
+            <i class="fa-solid fa-circle-info"></i>
+            Bounding boxes, stop line, and violation labels are drawn by the AI in real-time.
+          </div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5)" id="frameCounter">Frame 0</div>
+        </div>
+      </div>
+
+      <!-- ===== COMPLETE PANEL ===== -->
+      <div class="complete-panel" id="completePanel">
+        <div class="complete-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="complete-title">Analysis Complete</div>
+        <div class="complete-sub">The video has been fully processed and violations have been recorded.</div>
+        <div class="complete-stats">
+          <div class="cstat">
+            <div class="cstat-val" id="finalFrames">—</div>
+            <div class="cstat-lbl">Frames Processed</div>
+          </div>
+          <div class="cstat">
+            <div class="cstat-val red" id="finalViolations">—</div>
+            <div class="cstat-lbl">Violations Detected</div>
+          </div>
+        </div>
+        <div class="result-buttons">
+          <a href="#" id="viewResultsBtn" class="btn btn-primary"><i class="fa-solid fa-chart-bar"></i> View Full Report</a>
+          <button type="button" class="btn btn-secondary" id="uploadAnotherBtn"><i class="fa-solid fa-plus"></i> Analyze Another Video</button>
+        </div>
+      </div>
+
+      <!-- Video metadata form -->
+      <div class="form-divider" id="metaForm">
+        <div class="form-divider-title"><i class="fa-solid fa-pen-to-square"></i> Video Information</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Location / Area <span class="req">*</span></label><input type="text" class="form-control" name="location" placeholder="e.g., Maitighar Mandala, Kathmandu" value="Maitighar, Kathmandu"></div>
+          <div class="form-group"><label class="form-label">Camera ID / Name <span class="req">*</span></label><input type="text" class="form-control" name="camera_id" placeholder="e.g., CAM-MTG-001" value="CAM-MTG-004"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Recording Date <span class="req">*</span></label><input type="date" class="form-control" name="recording_date" value="2026-02-22"></div>
+          <div class="form-group"><label class="form-label">Recording Time <span class="req">*</span></label><input type="time" class="form-control" name="recording_time" value="12:30"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Additional Notes</label><textarea class="form-control" name="notes" placeholder="Any additional context about the footage..."></textarea></div>
+      </div>
+
+      <div class="submit-row" id="submitRow">
+        <div class="submit-note"><i class="fa-solid fa-clock"></i> Live analysis starts immediately after upload.</div>
+        <button type="submit" class="btn-analyze" id="analyzeBtn"><i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Video</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="recent-card">
+    <div class="recent-header"><i class="fa-solid fa-clock-rotate-left"></i><h3>Recent Analyses</h3></div>
+    <div class="recent-list" id="recentList"><div class="empty-recent"><i class="fa-solid fa-folder-open"></i><p>No previous analyses found. Upload a video to get started.</p></div></div>
+  </div>
+</div>
+
+<footer>
+  <div class="ft">
+    <div><div class="ft-logo-fb"><i class="fa-solid fa-shield-halved"></i></div><div class="ft-brand-name">काठमाण्डौ उपत्यका ट्राफिक प्रहरी कार्यालय</div><div class="ft-brand-en">Kathmandu Valley Traffic Police Office</div><div class="ft-divider"></div></div>
+    <div class="ft-col"><h4>Services</h4><ul class="ft-list"><li><i class="fa-solid fa-chevron-right"></i> Traffic Helpline 103</li><li><i class="fa-solid fa-chevron-right"></i> Lost Vehicle Report</li><li><i class="fa-solid fa-chevron-right"></i> Traffic Fine Payment</li><li><i class="fa-solid fa-chevron-right"></i> Awareness Programs</li></ul></div>
+    <div class="ft-col ft-contact"><h4>Contact</h4><div class="ci"><div class="ci-icon"><i class="fa-solid fa-location-dot"></i></div><div class="ci-text"><strong>Ramshahpath, Kathmandu</strong></div></div><div class="ci"><div class="ci-icon"><i class="fa-solid fa-phone-volume"></i></div><div class="ci-text"><strong>103</strong> (Toll Free)</div></div></div>
+  </div>
+  <div class="ft-bottom"><div>© 2082 B.S. Nepal Police — Kathmandu Valley Traffic Police Office</div></div>
+</footer>
+
+<div class="disclaimer-bar"><i class="fa-solid fa-circle-info"></i><span><strong>Note:</strong> Analysis results are system-generated and must be verified by authorized Traffic Police personnel before any enforcement action.</span></div>
+
+<script>
+// ── Date ──────────────────────────────────────────────────────────────────────
+function updateDate() {
+  const today = new Date();
+  document.getElementById('currentDate').innerHTML =
+    today.toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+}
+updateDate();
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// ── DOM refs ──────────────────────────────────────────────────────────────────
+const dropZone       = document.getElementById('dropZone');
+const fileInput      = document.getElementById('fileInput');
+const fileSelected   = document.getElementById('fileSelected');
+const fileName       = document.getElementById('fileName');
+const fileInfoSpan   = document.getElementById('fileInfo');
+const removeBtn      = document.getElementById('removeFile');
+const uploadForm     = document.getElementById('uploadForm');
+const uploadProgress = document.getElementById('uploadProgress');
+const progFill       = document.getElementById('progFill');
+const progPct        = document.getElementById('progPct');
+const analyzeBtn     = document.getElementById('analyzeBtn');
+const recentList     = document.getElementById('recentList');
+const metaForm       = document.getElementById('metaForm');
+const submitRow      = document.getElementById('submitRow');
+
+// Live panel
+const livePanel      = document.getElementById('livePanel');
+const liveProgress   = document.getElementById('liveProgress');
+const liveViolations = document.getElementById('liveViolations');
+const analysisProg   = document.getElementById('analysisProg');
+const canvasStatus   = document.getElementById('canvasStatus');
+const frameCounter   = document.getElementById('frameCounter');
+const canvas         = document.getElementById('liveCanvas');
+const ctx            = canvas.getContext('2d');
+
+// Complete panel
+const completePanel    = document.getElementById('completePanel');
+const finalFrames      = document.getElementById('finalFrames');
+const finalViolations  = document.getElementById('finalViolations');
+const viewResultsBtn   = document.getElementById('viewResultsBtn');
+const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
+
+// ── File selection ────────────────────────────────────────────────────────────
+let selectedFile = null;
+let eventSource  = null;
+let frameCount   = 0;
+let lastFrameTime = 0;
+let fpsDisplay   = 0;
+
+function showFile(file) {
+  const mb = (file.size / 1024 / 1024).toFixed(1);
+  fileName.textContent = file.name;
+  fileInfoSpan.textContent = `Size: ${mb} MB · Ready to upload`;
+  fileSelected.classList.add('show');
+  dropZone.style.display = 'none';
+}
+
+function clearFile() {
+  selectedFile = null;
+  fileInput.value = '';
+  fileSelected.classList.remove('show');
+  dropZone.style.display = '';
+  uploadProgress.classList.remove('show');
+  livePanel.classList.remove('show');
+  completePanel.classList.remove('show');
+  metaForm.style.display = '';
+  submitRow.style.display = '';
+  analyzeBtn.disabled = false;
+  analyzeBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Video';
+  frameCount = 0;
+  if (eventSource) { eventSource.close(); eventSource = null; }
+}
+
+fileInput.addEventListener('change', e => {
+  if (e.target.files && e.target.files[0]) {
+    selectedFile = e.target.files[0];
+    showFile(selectedFile);
+  }
+});
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    selectedFile = e.dataTransfer.files[0];
+    showFile(selectedFile);
+    const dt = new DataTransfer();
+    dt.items.add(selectedFile);
+    fileInput.files = dt.files;
+  }
+});
+
+removeBtn.addEventListener('click', clearFile);
+
+// ── Upload progress fake-fill ─────────────────────────────────────────────────
+function updateUploadProgress(pct) {
+  progFill.style.width = pct + '%';
+  progPct.textContent = Math.floor(pct) + '%';
+}
+
+// ── Draw a base64 JPEG frame onto the canvas ──────────────────────────────────
+function drawFrame(b64) {
+  const img = new Image();
+  img.onload = () => {
+    // Resize canvas to match first frame dimensions
+    if (canvas.width !== img.naturalWidth) {
+      canvas.width  = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+    }
+    ctx.drawImage(img, 0, 0);
+
+    // FPS calculation
+    const now = performance.now();
+    if (lastFrameTime) {
+      const elapsed = now - lastFrameTime;
+      fpsDisplay = Math.round(1000 / elapsed);
+      const fpsEl = document.getElementById('liveFPSVal');
+      if (fpsEl) fpsEl.textContent = fpsDisplay;
+      document.getElementById('liveFPS').style.display = '';
+    }
+    lastFrameTime = now;
+
+    frameCount++;
+    frameCounter.textContent = `Frame ${frameCount}`;
+    canvasStatus.textContent = 'Streaming…';
+  };
+  img.src = 'data:image/jpeg;base64,' + b64;
+}
+
+// ── Start SSE live stream ─────────────────────────────────────────────────────
+function startLiveStream(sessionId) {
+    console.log('Starting live stream for session:', sessionId);
+    
+    // Show video container
+    processingStatus.style.display = 'none';
+    videoContainer.style.display = 'block';
+    
+    // Create image element for frames
+    const liveImg = document.createElement('img');
+    liveImg.style.width = '100%';
+    liveImg.style.borderRadius = '8px';
+    liveImg.style.background = '#000';
+    liveImg.id = 'liveFrame';
+    liveFrameContainer.innerHTML = '';
+    liveFrameContainer.appendChild(liveImg);
+    
+    // Connect to SSE
+    if (eventSource) {
+        eventSource.close();
+    }
+    
+    eventSource = new EventSource(`/live_stream/${sessionId}`);
+    
+    eventSource.onopen = function() {
+        console.log('SSE connection opened');
+        statusMessage.innerHTML = 'Live stream connected...';
+    };
+    
+    eventSource.onmessage = function(event) {
+        const data = event.data;
+        console.log('Received SSE data:', data.substring(0, 100));
+        
+        if (data === 'done') {
+            console.log('Stream completed');
+            if (eventSource) eventSource.close();
+            return;
+        }
+        
+        if (data === 'timeout' || data === 'error') {
+            console.error('Stream error:', data);
+            statusMessage.innerHTML = 'Stream error. Waiting for processing...';
+            return;
+        }
+        
+        // Format: progress:violations:base64_frame
+        const parts = data.split(':');
+        if (parts.length >= 3) {
+            const progress = parseFloat(parts[0]);
+            const violations = parseInt(parts[1]);
+            const frameData = parts.slice(2).join(':'); // Handle colons in base64
+            
+            // Update progress
+            document.getElementById('progPct').textContent = Math.floor(progress) + '%';
+            document.getElementById('progFill').style.width = progress + '%';
+            
+            // Update violation count
+            document.getElementById('violationCount').textContent = violations;
+            document.getElementById('totalViolations').textContent = violations;
+            
+            // Display frame
+            liveImg.src = `data:image/jpeg;base64,${frameData}`;
+        }
+    };
+    
+    eventSource.onerror = function(e) {
+        console.error('SSE error:', e);
+        if (eventSource) eventSource.close();
+        statusMessage.innerHTML = 'Connection lost. Waiting for results...';
+    };
+}
+// ── Poll until main_processor saves final_report.json ────────────────────────
+function waitForReport(sessionId) {
+  // Show that main_processor is still running after live stream ends
+  liveViolations.textContent = '…';
+  canvasStatus.textContent   = 'Finalising analysis…';
+
+  const poll = setInterval(async () => {
+    try {
+      const res  = await fetch(`/api/status/${sessionId}`);
+      const data = await res.json();
+      if (data.complete) {
+        clearInterval(poll);
+        // Fetch the final report for accurate violation count
+        const rep  = await fetch(`/api/violations/${sessionId}`);
+        const report = await rep.json();
+        const total = report?.summary?.total_violations ?? 0;
+        showComplete(sessionId, frameCount, total);
+      }
+    } catch (err) {
+      console.error('Report poll error:', err);
+    }
+  }, 3000); // check every 3 seconds
+}
+
+// ── Show complete panel ───────────────────────────────────────────────────────
+function showComplete(sessionId, frames, violations) {
+  livePanel.classList.remove('show');
+  completePanel.classList.add('show');
+  finalFrames.textContent    = frames.toLocaleString();
+  finalViolations.textContent = violations;
+  viewResultsBtn.href        = `/results/${sessionId}`;
+  analyzeBtn.disabled = false;
+  analyzeBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Video';
+}
+
+// ── Form submit ───────────────────────────────────────────────────────────────
+uploadForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if (!selectedFile) { alert('Please select a video file first.'); return; }
+
+  const ext = selectedFile.name.split('.').pop().toLowerCase();
+  if (!['mp4','avi','mov','mkv'].includes(ext)) {
+    alert('Unsupported file format. Please upload MP4, AVI, MOV, or MKV files.');
+    return;
+  }
+  if (selectedFile.size > 500 * 1024 * 1024) {
+    alert('File size exceeds 500 MB limit. Please choose a smaller video.');
+    return;
+  }
+
+  // UI: show upload bar, hide form sections while processing
+  uploadProgress.classList.add('show');
+  analyzeBtn.disabled = true;
+  analyzeBtn.innerHTML = '<i class="fa-solid fa-circle-notch spin"></i> Uploading…';
+
+  const formData = new FormData();
+  formData.append('video_file', selectedFile);
+  formData.append('location',       document.querySelector('input[name="location"]').value);
+  formData.append('camera_id',      document.querySelector('input[name="camera_id"]').value);
+  formData.append('recording_date', document.querySelector('input[name="recording_date"]').value);
+  formData.append('recording_time', document.querySelector('input[name="recording_time"]').value);
+  formData.append('notes',          document.querySelector('textarea[name="notes"]').value);
+
+  // Fake upload progress animation
+  let simPct = 0;
+  const simInterval = setInterval(() => {
+    if (simPct < 90) { simPct += Math.random() * 15; updateUploadProgress(Math.min(simPct, 90)); }
+  }, 200);
+
+  try {
+    const response = await fetch('/upload', { method: 'POST', body: formData });
+    clearInterval(simInterval);
+    const data = await response.json();
+
+    if (data.success) {
+      updateUploadProgress(100);
+
+      setTimeout(() => {
+        // Hide upload bar and form, show live panel
+        uploadProgress.classList.remove('show');
+        fileSelected.classList.remove('show');
+        metaForm.style.display = 'none';
+        submitRow.style.display = 'none';
+        analyzeBtn.innerHTML = '<i class="fa-solid fa-circle-notch spin"></i> Analyzing…';
+
+        livePanel.classList.add('show');
+        canvasStatus.textContent = 'Connecting to stream…';
+
+        // Scroll to live panel smoothly
+        livePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        startLiveStream(data.session_id);
+      }, 400);
+
+    } else {
+      clearInterval(simInterval);
+      alert('Upload failed: ' + data.error);
+      analyzeBtn.disabled = false;
+      analyzeBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Video';
+      uploadProgress.classList.remove('show');
+    }
+  } catch (err) {
+    clearInterval(simInterval);
+    alert('Upload failed: ' + err.message);
+    analyzeBtn.disabled = false;
+    analyzeBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Video';
+    uploadProgress.classList.remove('show');
+  }
+});
+
+// ── Upload another ────────────────────────────────────────────────────────────
+uploadAnotherBtn.addEventListener('click', () => {
+  completePanel.classList.remove('show');
+  livePanel.classList.remove('show');
+  clearFile();
+  loadRecentAnalyses();
+});
+
+// ── Recent analyses ───────────────────────────────────────────────────────────
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+async function loadRecentAnalyses() {
+  try {
+    const response = await fetch('/api/recent-analyses');
+    const data = await response.json();
+    if (data.recent && data.recent.length > 0) {
+      recentList.innerHTML = '';
+      data.recent.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'recent-item';
+        div.onclick = () => window.location.href = `/results/${item.session_id}`;
+        div.innerHTML = `<div><div class="recent-filename">${escapeHtml(item.video_filename)}</div><div class="recent-meta">${escapeHtml(item.date)} · ${escapeHtml(item.duration)}</div></div><div class="recent-badge">${item.violations} violations</div>`;
+        recentList.appendChild(div);
+      });
+    }
+  } catch (err) {
+    console.error('Failed to load recent analyses:', err);
+  }
+}
+
+loadRecentAnalyses();
+</script>
+
+{% endblock %}

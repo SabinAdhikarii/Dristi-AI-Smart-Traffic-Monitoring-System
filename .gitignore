@@ -1,0 +1,43 @@
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Large AI datasets
+data/
+datasets/
+helmet_kaggle/
+ua_detrac/
+traffic_lights/
+test/
+train/
+valid/
+
+# Models (very large)
+models/
+*.pt
+
+# Outputs & results
+outputs/
+results/
+runs/
+traffic_lights_validation_results/
+
+# Uploaded / generated files
+uploads/
+uploaded_videos/
+violations/
+
+# Logs
+*.log
+
+# Docker (as you said)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,35 +1,44 @@
 #!/usr/bin/env python3
 """
-Train YOLOv8 on UA-DETRAC dataset with automatic path fixing
+Train YOLOv8 on UA-DETRAC dataset - Windows optimized with project paths
 """
 from ultralytics import YOLO
 import os
 import yaml
-from pathlib import Path
+import torch
+
+# Get project root directory
+PROJECT_ROOT = os.getcwd()
+MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
+DATA_DIR = os.path.join(PROJECT_ROOT, "data", "ua_detrac")
+DATA_YAML = os.path.join(DATA_DIR, "data.yaml")
 
 def fix_data_yaml():
     """Fix the paths in data.yaml if needed"""
-    yaml_path = "data/ua_detrac/data.yaml"
-    
-    if not os.path.exists(yaml_path):
-        print(f" {yaml_path} not found!")
+    if not os.path.exists(DATA_YAML):
+        print(f" {DATA_YAML} not found!")
         return False
     
-    with open(yaml_path, 'r') as f:
+    with open(DATA_YAML, 'r') as f:
         content = f.read()
     
-    # Check if paths are wrong
-    if "../train/images" in content:
-        print("  Detected wrong paths in data.yaml. Fixing...")
+    # Fix paths for Windows
+    if "../train/images" in content or "train/images" not in content:
+        print("  Fixing paths in data.yaml...")
         
-        # Fix the paths
-        content = content.replace("../train/images", "train/images")
-        content = content.replace("../valid/images", "valid/images")
-        content = content.replace("../test/images", "test/images")
+        # Ensure correct relative paths
+        new_content = f"""# Dataset configuration
+path: {PROJECT_ROOT}  # Project root
+train: data/ua_detrac/train/images
+val: data/ua_detrac/valid/images
+test: data/ua_detrac/test/images
+
+nc: 4
+names: ['bus', 'car', 'truck', 'van']
+"""
         
-        # Save fixed version
-        with open(yaml_path, 'w') as f:
-            f.write(content)
+        with open(DATA_YAML, 'w') as f:
+            f.write(new_content)
         
         print(" Fixed data.yaml paths")
         return True
@@ -39,123 +48,131 @@ def fix_data_yaml():
 def check_dataset_structure():
     """Verify dataset structure is correct"""
     print("\n" + "=" * 60)
-    print("Dataset Structure Check")
+    print(" Dataset Structure Check")
     print("=" * 60)
     
-    checks = []
+    checks_passed = True
     
-    # Check 1: Directories exist
+    # Check directories
     dirs_to_check = [
-        ("data/ua_detrac/train/images", True),
-        ("data/ua_detrac/train/labels", True),
-        ("data/ua_detrac/valid/images", True),
-        ("data/ua_detrac/valid/labels", True),
+        os.path.join(DATA_DIR, "train", "images"),
+        os.path.join(DATA_DIR, "train", "labels"),
+        os.path.join(DATA_DIR, "valid", "images"),
+        os.path.join(DATA_DIR, "valid", "labels"),
     ]
     
-    for path, required in dirs_to_check:
+    for path in dirs_to_check:
         exists = os.path.exists(path)
         status = "✅" if exists else "❌"
-        checks.append((path, exists, required))
-        print(f"{status} {path}")
+        print(f"{status} {os.path.relpath(path, PROJECT_ROOT)}")
+        if not exists:
+            checks_passed = False
     
-    # Check 2: Count files
-    train_images = len(os.listdir("data/ua_detrac/train/images"))
-    train_labels = len(os.listdir("data/ua_detrac/train/labels"))
-    print(f"\n Training set: {train_images} images, {train_labels} labels")
+    # Count files
+    try:
+        train_images = len(os.listdir(os.path.join(DATA_DIR, "train", "images")))
+        train_labels = len(os.listdir(os.path.join(DATA_DIR, "train", "labels")))
+        print(f"\n Training set: {train_images} images, {train_labels} labels")
+        
+        val_images = len(os.listdir(os.path.join(DATA_DIR, "valid", "images")))
+        val_labels = len(os.listdir(os.path.join(DATA_DIR, "valid", "labels")))
+        print(f" Validation set: {val_images} images, {val_labels} labels")
+    except Exception as e:
+        print(f" Error counting files: {e}")
+        checks_passed = False
     
-    val_images = len(os.listdir("data/ua_detrac/valid/images"))
-    val_labels = len(os.listdir("data/ua_detrac/valid/labels"))
-    print(f" Validation set: {val_images} images, {val_labels} labels")
-    
-    # Check 3: Verify label format
+    # Check label format
     print("\n Checking label format...")
     try:
-        sample_label = os.listdir("data/ua_detrac/train/labels")[0]
-        with open(f"data/ua_detrac/train/labels/{sample_label}", 'r') as f:
+        sample_label = os.listdir(os.path.join(DATA_DIR, "train", "labels"))[0]
+        label_path = os.path.join(DATA_DIR, "train", "labels", sample_label)
+        with open(label_path, 'r') as f:
             first_line = f.readline().strip()
-            print(f"Sample label format: {first_line}")
-            if len(first_line.split()) == 5:
-                print(" YOLO format correct")
+            parts = first_line.split()
+            if len(parts) == 5:
+                print(f" YOLO format correct: {first_line[:50]}...")
             else:
-                print("  Unexpected label format")
-    except:
-        print("  Could not check label format")
-    
-    # Check 4: Verify data.yaml
-    print("\n Checking data.yaml...")
-    try:
-        with open("data/ua_detrac/data.yaml", 'r') as f:
-            config = yaml.safe_load(f)
-        
-        print(f"  Classes: {config.get('nc')}")
-        print(f"  Class names: {config.get('names')}")
-        print(f"  Train path: {config.get('train')}")
-        print(f"  Val path: {config.get('val')}")
-        
-        # Verify paths exist
-        train_path = os.path.join("data/ua_detrac", config.get('train', ''))
-        if os.path.exists(train_path):
-            print(f" Train path exists: {train_path}")
-        else:
-            print(f" Train path not found: {train_path}")
-            
+                print(f" Unexpected format: {first_line}")
+                checks_passed = False
     except Exception as e:
-        print(f" Error reading data.yaml: {e}")
+        print(f" Could not check label format: {e}")
+        checks_passed = False
     
-    print("\n" + "=" * 60)
-    
-    # Return True if all required checks pass
-    all_good = all([exists for path, exists, required in checks if required])
-    return all_good
+    return checks_passed
 
 def train_model():
     """Train YOLOv8 model"""
     print("\n" + "=" * 60)
-    print("Starting YOLOv8 Training")
+    print(" Starting YOLOv8 Training")
     print("=" * 60)
     
-    # 1. Fix paths if needed
+    # Fix paths
     if not fix_data_yaml():
         print(" Failed to fix data.yaml")
         return None, None
     
-    # 2. Check dataset
+    # Check dataset
     if not check_dataset_structure():
-        print(" Dataset structure issues detected")
+        print("\n  Dataset structure has issues")
         response = input("Continue anyway? (y/n): ").lower()
         if response != 'y':
             print("Training cancelled.")
             return None, None
     
-    # 3. Load model
-    print("\n[1] Loading YOLOv8n model...")
+    # Check GPU
+    gpu_available = torch.cuda.is_available()
+    if gpu_available:
+        device = 0
+        gpu_name = torch.cuda.get_device_name(0)
+        print(f"\n GPU detected: {gpu_name}")
+    else:
+        device = 'cpu'
+        print("\n No GPU detected. Training on CPU (will be slower)")
+    
+    # Load model
+    print("\n Loading YOLOv8n model...")
     try:
-        model = YOLO("yolov8n.pt")  # Pre-trained on COCO
+        model = YOLO("yolov8n.pt")
+        print(" Model loaded successfully")
     except Exception as e:
         print(f" Failed to load model: {e}")
-        print("Trying alternative...")
-        model = YOLO("yolov8n.yaml")  # Create from scratch
+        return None, None
     
-    # 4. Train
-    print("\n[2] Starting training...")
-    print("   This may take 30-60 minutes")
-    print("   Press Ctrl+C to stop early\n")
+    # Training configuration
+    print("\nTraining Configuration:")
+    print(f"   Data: {os.path.relpath(DATA_YAML, PROJECT_ROOT)}")
+    print(f"   Epochs: 10")
+    print(f"   Image size: 640")
+    print(f"   Batch size: 32")
+    print(f"   Device: {device}")
+    print(f"   Project: {os.path.relpath(MODELS_DIR, PROJECT_ROOT)}")
+    
+    # Train
+    print("\n  Starting training...")
+    print("   (Press Ctrl+C to stop early)\n")
     
     try:
         results = model.train(
-            data="data/ua_detrac/data.yaml",
-            epochs=50,
+            data=DATA_YAML,
+            epochs=10,
             imgsz=640,
-            batch=16,
-            patience=10,
-            device="0",  # Change to "cpu" if no GPU
-            project="models",
-            name="yolov8n_ua_detrac",
+            batch=32,
+            device=device,
+            project=MODELS_DIR,           # Save to project/models/
+            name="yolov8n_trained",       # models/yolov8n_trained/
             exist_ok=True,
             verbose=True,
-            workers=4,  # Reduce if you get errors
+            workers=4,
+            amp=True,                      # Mixed precision
+            cache=False,                    # Don't cache images
+            patience=10,                     # Early stopping
+            save=True,
+            save_period=5
         )
-        print("\n Training completed successfully!")
+        
+        print("\n" + "=" * 60)
+        print(" TRAINING COMPLETED SUCCESSFULLY!")
+        print("=" * 60)
         return model, results
         
     except KeyboardInterrupt:
@@ -165,59 +182,59 @@ def train_model():
         print(f"\n Training failed: {e}")
         return None, None
 
-def quick_test_model(model_path):
-    """Quick test to verify model works"""
+def show_results():
+    """Show where models are saved"""
     print("\n" + "=" * 60)
-    print("Quick Model Test")
+    print(" Saved Files Location")
     print("=" * 60)
     
-    if not os.path.exists(model_path):
-        print(f" Model not found: {model_path}")
-        return
-    
-    model = YOLO(model_path)
-    
-    # Test on a single validation image
-    val_images = os.listdir("data/ua_detrac/valid/images")
-    if val_images:
-        test_image = os.path.join("data/ua_detrac/valid/images", val_images[0])
-        print(f"Testing on: {test_image}")
+    # Check for trained model
+    model_path = os.path.join(MODELS_DIR, "yolov8n_trained", "weights", "best.pt")
+    if os.path.exists(model_path):
+        print(f"\n Trained model: {os.path.relpath(model_path, PROJECT_ROOT)}")
+        print(f"   File size: {os.path.getsize(model_path) / 1024 / 1024:.1f} MB")
         
-        results = model(test_image, save=True, save_dir="outputs/quick_test/")
-        print(" Quick test complete!")
-        print(f"Results saved to: outputs/quick_test/")
+        # Load and show classes
+        model = YOLO(model_path)
+        print(f"   Classes: {list(model.names.values())}")
     else:
-        print("  No validation images found for testing")
+        print("\n No trained model found")
+    
+    # Show all model files
+    print("\n All model files:")
+    if os.path.exists(MODELS_DIR):
+        for root, dirs, files in os.walk(MODELS_DIR):
+            for file in files:
+                if file.endswith('.pt'):
+                    full_path = os.path.join(root, file)
+                    print(f"   - {os.path.relpath(full_path, PROJECT_ROOT)}")
 
 def main():
     """Main training pipeline"""
     
-    print(" UA-DETRAC Vehicle Detection Training")
     print("=" * 60)
+    print(" UA-DETRAC VEHICLE DETECTION TRAINING")
+    print("=" * 60)
+    print(f" Project: {PROJECT_ROOT}")
     
     # Create necessary directories
-    os.makedirs("models", exist_ok=True)
-    os.makedirs("outputs", exist_ok=True)
+    os.makedirs(MODELS_DIR, exist_ok=True)
+    os.makedirs(os.path.join(PROJECT_ROOT, "outputs"), exist_ok=True)
+    os.makedirs(os.path.join(PROJECT_ROOT, "runs"), exist_ok=True)
     
-    # Ask for training parameters
-    print("\nTraining Configuration:")
-    print("  Model: YOLOv8n (fastest)")
-    print("  Epochs: 50")
-    print("  Image size: 640x640")
-    print("  Batch size: 16")
+    # Check if dataset exists
+    if not os.path.exists(DATA_DIR):
+        print(f"\n Dataset not found at: {DATA_DIR}")
+        print("Please ensure your UA-DETRAC dataset is in:")
+        print(f"   {DATA_DIR}")
+        return
     
-    gpu_available = False
-    try:
-        import torch
-        gpu_available = torch.cuda.is_available()
-    except:
-        pass
-    
-    if gpu_available:
-        print(f"  Device: GPU ({torch.cuda.get_device_name(0)})")
-    else:
-        print("  Device: CPU (slow)")
-        print("    Training will be slow on CPU!")
+    # Confirm training
+    print("\n Training Summary:")
+    print(f"   Model: YOLOv8n")
+    print(f"   Epochs: 10")
+    print(f"   Dataset: UA-DETRAC (4 classes)")
+    print(f"   Save location: {os.path.relpath(MODELS_DIR, PROJECT_ROOT)}")
     
     confirm = input("\nStart training? (y/n): ").lower()
     if confirm != 'y':
@@ -227,24 +244,21 @@ def main():
     # Run training
     model, results = train_model()
     
-    if model is not None:
-        # Quick test
-        model_path = "models/yolov8n_ua_detrac/weights/best.pt"
-        if os.path.exists(model_path):
-            quick_test_model(model_path)
-            
-            print("\n" + "=" * 60)
-            print(" TRAINING COMPLETE!")
-            print("=" * 60)
-            print(f"\nTrained model saved to: {model_path}")
-            print("\nNext steps:")
-            print("1. Test on videos: python src/04_test.py --validate")
-            print("2. Test on your video: python src/04_test.py --video your_video.mp4")
-            print("3. View training results: open models/yolov8n_ua_detrac/")
-        else:
-            print("\n  Model not found. Check training logs.")
+    # Show results
+    show_results()
     
-    print("\nDone!")
+    print("\n" + "=" * 60)
+    print(" SETUP COMPLETE")
+    print("=" * 60)
+    print("\nNext steps:")
+    print("1. Test your model on videos:")
+    print("   python src/test_with_model.py")
+    print("\n2. Check your model at:")
+    print(f"   {os.path.join(MODELS_DIR, 'yolov8n_trained', 'weights', 'best.pt')}")
+    print("\n3. All outputs will be saved in:")
+    print("   - models/     : Trained model weights")
+    print("   - runs/       : Detection results")
+    print("   - outputs/    : Additional outputs")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,1445 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Nepal Traffic Police System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<style>
+    :root {
+    --primary-color: #2563eb;
+    --secondary-color: #3b82f6;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --dark-color: #1e293b;
+    --light-color: #f8fafc;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --sidebar-width: 240px;
+    --header-height: 70px;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--light-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Header Styles */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-height);
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    box-shadow: var(--shadow-md);
+}
+
+.header-title h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.header-title p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.logout-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Container & Layout */
+.container {
+    display: flex;
+    margin-top: var(--header-height);
+    min-height: calc(100vh - var(--header-height));
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: var(--sidebar-width);
+    background: white;
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+    position: fixed;
+    left: 0;
+    top: var(--header-height);
+    bottom: 0;
+    overflow-y: auto;
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+    background: var(--light-color);
+    color: var(--primary-color);
+    border-left-color: var(--primary-color);
+}
+
+.nav-item.active {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.1), transparent);
+    color: var(--primary-color);
+    border-left-color: var(--primary-color);
+    font-weight: 600;
+}
+
+.nav-item i {
+    width: 20px;
+    font-size: 1.125rem;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 2rem;
+    background: var(--light-color);
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-icon.blue {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.stat-icon.orange {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.stat-icon.green {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.stat-icon.red {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.stat-info h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-info p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Filter Section */
+.filter-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 150px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.filter-input,
+.filter-select {
+    padding: 0.625rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Table Container */
+.table-container {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table thead {
+    background: var(--light-color);
+}
+
+.data-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.data-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+    background: var(--light-color);
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.badge-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-action {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+}
+
+.btn-view {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--primary-color);
+}
+
+.btn-view:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-download {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.btn-download:hover {
+    background: var(--success-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+.btn-delete:hover {
+    background: var(--danger-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-cancel {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+}
+
+.btn-cancel:hover {
+    background: var(--warning-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-retry {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--secondary-color);
+}
+
+.btn-retry:hover {
+    background: var(--secondary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 24px;
+    background: var(--light-color);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: width 0.3s ease;
+}
+
+/* Error Text */
+.error-text {
+    color: var(--danger-color);
+    font-weight: 600;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.pagination-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: white;
+    color: var(--text-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.pagination-btn:hover {
+    background: var(--light-color);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.pagination-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0 1rem;
+    }
+
+    .header-title h1 {
+        font-size: 1.125rem;
+    }
+
+    .header-title p {
+        display: none;
+    }
+
+    .main-content {
+        padding: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-section {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        min-width: 100%;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        font-size: 0.75rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.5rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card,
+.filter-section,
+.table-container {
+    animation: fadeIn 0.5s ease;
+}
+</style>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="header-title">
+                <h1>Admin Dashboard</h1>
+                <p>Nepal Traffic Police System</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <span class="user-name">Admin User</span>
+                <button class="logout-btn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="nav-menu">
+                <a href="#" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-video"></i>
+                    <span>Video Management</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Violation Records</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-newspaper"></i>
+                    <span>News Management</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>System Logs</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Video Management</h2>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>423</h3>
+                        <p>Total Videos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>8</h3>
+                        <p>Processing</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>398</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>17</h3>
+                        <p>Failed</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label>Search:</label>
+                    <input type="text" placeholder="Filename, Location..." class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label>Status:</label>
+                    <select class="filter-select">
+                        <option>All Status</option>
+                        <option>Completed</option>
+                        <option>Processing</option>
+                        <option>Failed</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Location:</label>
+                    <select class="filter-select">
+                        <option>All Locations</option>
+                        <option>Maitighar</option>
+                        <option>Koteshwor</option>
+                        <option>Kalanki</option>
+                        <option>Balaju</option>
+                        <option>Saldobato</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Date:</label>
+                    <input type="date" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label>Uploaded By:</label>
+                    <select class="filter-select">
+                        <option>All Users</option>
+                        <option>Ram Sharma</option>
+                        <option>Sita Thapa</option>
+                        <option>Hari Prasad</option>
+                        <option>Gita Devi</option>
+                        <option>Kumar Rai</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- All Videos Table -->
+            <div class="table-container">
+                <h3 class="section-title">All Videos</h3>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Filename</th>
+                                <th>Uploaded By</th>
+                                <th>Location</th>
+                                <th>Date</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Violations</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>V-001</td>
+                                <td>traffic_footage_mainroad.mp4</td>
+                                <td>Ram Sharma</td>
+                                <td>Maitighar</td>
+                                <td>2082-08-19</td>
+                                <td>5:32</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>18</td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-view" title="View"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-action btn-download" title="Download"><i class="fas fa-download"></i></button>
+                                    <button class="btn-action btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>V-002</td>
+                                <td>intersection_footage.mp4</td>
+                                <td>Sita Thapa</td>
+                                <td>Koteshwor</td>
+                                <td>2082-08-18</td>
+                                <td>8:15</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>12</td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-view" title="View"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-action btn-download" title="Download"><i class="fas fa-download"></i></button>
+                                    <button class="btn-action btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>V-003</td>
+                                <td>morning_rush_hour.mp4</td>
+                                <td>Hari Prasad</td>
+                                <td>Kalanki</td>
+                                <td>2082-08-18</td>
+                                <td>10:45</td>
+                                <td><span class="badge badge-warning">Processing</span></td>
+                                <td>-</td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-view" title="View Status"><i class="fas fa-clock"></i></button>
+                                    <button class="btn-action btn-cancel" title="Cancel"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>V-004</td>
+                                <td>evening_traffic.mp4</td>
+                                <td>Gita Devi</td>
+                                <td>Balaju</td>
+                                <td>2082-08-17</td>
+                                <td>6:20</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                                <td>25</td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-view" title="View"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-action btn-download" title="Download"><i class="fas fa-download"></i></button>
+                                    <button class="btn-action btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>V-005</td>
+                                <td>night_patrol.mp4</td>
+                                <td>Kumar Rai</td>
+                                <td>Saldobato</td>
+                                <td>2082-08-17</td>
+                                <td>4:30</td>
+                                <td><span class="badge badge-danger">Failed</span></td>
+                                <td>-</td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-retry" title="Retry"><i class="fas fa-redo"></i></button>
+                                    <button class="btn-action btn-view" title="View Error"><i class="fas fa-exclamation-circle"></i></button>
+                                    <button class="btn-action btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button class="pagination-btn">Previous</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">Next</button>
+                </div>
+            </div>
+
+            <!-- Processing Queue -->
+            <div class="table-container">
+                <h3 class="section-title">Processing Queue (8)</h3>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Filename</th>
+                                <th>Uploaded By</th>
+                                <th>Size</th>
+                                <th>Progress</th>
+                                <th>Est. Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>morning_rush_hour.mp4</td>
+                                <td>Hari Prasad</td>
+                                <td>245 MB</td>
+                                <td>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 65%">65%</div>
+                                    </div>
+                                </td>
+                                <td>2 mins</td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-cancel" title="Cancel"><i class="fas fa-times"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>traffic_junction.mp4</td>
+                                <td>Maya Gurung</td>
+                                <td>180 MB</td>
+                                <td>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 0%">0%</div>
+                                    </div>
+                                </td>
+                                <td>5 mins</td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-cancel" title="Cancel"><i class="fas fa-times"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>highway_footage.mp4</td>
+                                <td>Bikram Shah</td>
+                                <td>320 MB</td>
+                                <td>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 0%">0%</div>
+                                    </div>
+                                </td>
+                                <td>8 mins</td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-cancel" title="Cancel"><i class="fas fa-times"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Failed Videos -->
+            <div class="table-container">
+                <h3 class="section-title">Failed Videos (17)</h3>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Filename</th>
+                                <th>Uploaded By</th>
+                                <th>Upload Date</th>
+                                <th>Error</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>night_patrol.mp4</td>
+                                <td>Kumar Rai</td>
+                                <td>2082-08-17</td>
+                                <td><span class="error-text">File corrupted</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-retry" title="Retry"><i class="fas fa-redo"></i></button>
+                                    <button class="btn-action btn-view" title="Details"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-action btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>broken_camera.mp4</td>
+                                <td>Ram Sharma</td>
+                                <td>2082-08-16</td>
+                                <td><span class="error-text">Invalid format</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-retry" title="Retry"><i class="fas fa-redo"></i></button>
+                                    <button class="btn-action btn-view" title="Details"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-action btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>test_footage.mp4</td>
+                                <td>Sita Thapa</td>
+                                <td>2082-08-15</td>
+                                <td><span class="error-text">Processing timeout</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-retry" title="Retry"><i class="fas fa-redo"></i></button>
+                                    <button class="btn-action btn-view" title="Details"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-action btn-delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Dashboard JavaScript
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize dashboard
+    initializeDashboard();
+    setupEventListeners();
+    animateStats();
+    setupTableInteractions();
+    simulateProcessingProgress();
+});
+
+// Initialize Dashboard
+function initializeDashboard() {
+    console.log('Nepal Traffic Police System - Dashboard Initialized');
+    
+    // Add smooth scroll behavior
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Set current date in date filter if empty
+    const dateInput = document.querySelector('input[type="date"]');
+    if (dateInput && !dateInput.value) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
+}
+
+// Setup Event Listeners
+function setupEventListeners() {
+    // Logout button
+    const logoutBtn = document.querySelector('.logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+
+    // Navigation items
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', handleNavigation);
+    });
+
+    // Filter inputs
+    const filterInputs = document.querySelectorAll('.filter-input, .filter-select');
+    filterInputs.forEach(input => {
+        input.addEventListener('change', handleFilter);
+    });
+
+    // Search input with debounce
+    const searchInput = document.querySelector('.filter-input[placeholder*="Filename"]');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(handleSearch, 300));
+    }
+
+    // Action buttons
+    setupActionButtons();
+
+    // Pagination buttons
+    const paginationBtns = document.querySelectorAll('.pagination-btn');
+    paginationBtns.forEach(btn => {
+        btn.addEventListener('click', handlePagination);
+    });
+}
+
+// Handle Logout
+function handleLogout(e) {
+    e.preventDefault();
+    if (confirm('Are you sure you want to logout?')) {
+        showNotification('Logging out...', 'info');
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 1000);
+    }
+}
+
+// Handle Navigation
+function handleNavigation(e) {
+    e.preventDefault();
+    
+    // Remove active class from all items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Add active class to clicked item
+    e.currentTarget.classList.add('active');
+    
+    // Get navigation text
+    const navText = e.currentTarget.querySelector('span').textContent;
+    showNotification(`Navigating to ${navText}...`, 'info');
+}
+
+// Handle Filter
+function handleFilter(e) {
+    const filterType = e.target.closest('.filter-group').querySelector('label').textContent;
+    const filterValue = e.target.value;
+    
+    console.log(`Filter applied: ${filterType} = ${filterValue}`);
+    showNotification(`Filtering by ${filterType}: ${filterValue}`, 'info');
+    
+    // Here you would typically make an API call or filter the table data
+    filterTable();
+}
+
+// Handle Search
+function handleSearch(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    console.log(`Searching for: ${searchTerm}`);
+    
+    if (searchTerm.length > 0) {
+        showNotification(`Searching for: ${searchTerm}`, 'info');
+    }
+    
+    // Filter table rows
+    const tableRows = document.querySelectorAll('.data-table tbody tr');
+    tableRows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Filter Table
+function filterTable() {
+    // Get filter values
+    const statusFilter = document.querySelector('.filter-select').value;
+    const locationFilter = document.querySelectorAll('.filter-select')[1].value;
+    
+    // Get table rows
+    const tableRows = document.querySelectorAll('.data-table tbody tr');
+    
+    tableRows.forEach(row => {
+        let showRow = true;
+        
+        // Status filter
+        if (statusFilter !== 'All Status') {
+            const statusBadge = row.querySelector('.badge');
+            if (statusBadge && !statusBadge.textContent.includes(statusFilter)) {
+                showRow = false;
+            }
+        }
+        
+        // Location filter
+        if (locationFilter !== 'All Locations') {
+            const locationCell = row.cells[3];
+            if (locationCell && locationCell.textContent !== locationFilter) {
+                showRow = false;
+            }
+        }
+        
+        row.style.display = showRow ? '' : 'none';
+    });
+}
+
+// Setup Action Buttons
+function setupActionButtons() {
+    // View buttons
+    const viewBtns = document.querySelectorAll('.btn-view');
+    viewBtns.forEach(btn => {
+        btn.addEventListener('click', handleView);
+    });
+
+    // Download buttons
+    const downloadBtns = document.querySelectorAll('.btn-download');
+    downloadBtns.forEach(btn => {
+        btn.addEventListener('click', handleDownload);
+    });
+
+    // Delete buttons
+    const deleteBtns = document.querySelectorAll('.btn-delete');
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', handleDelete);
+    });
+
+    // Cancel buttons
+    const cancelBtns = document.querySelectorAll('.btn-cancel');
+    cancelBtns.forEach(btn => {
+        btn.addEventListener('click', handleCancel);
+    });
+
+    // Retry buttons
+    const retryBtns = document.querySelectorAll('.btn-retry');
+    retryBtns.forEach(btn => {
+        btn.addEventListener('click', handleRetry);
+    });
+}
+
+// Handle View
+function handleView(e) {
+    const row = e.currentTarget.closest('tr');
+    const filename = row.cells[1]?.textContent || row.cells[0]?.textContent;
+    showNotification(`Opening video: ${filename}`, 'info');
+    console.log('View video:', filename);
+}
+
+// Handle Download
+function handleDownload(e) {
+    const row = e.currentTarget.closest('tr');
+    const filename = row.cells[1].textContent;
+    showNotification(`Downloading: ${filename}`, 'success');
+    console.log('Download video:', filename);
+    
+    // Simulate download
+    setTimeout(() => {
+        showNotification(`Download completed: ${filename}`, 'success');
+    }, 2000);
+}
+
+// Handle Delete
+function handleDelete(e) {
+    const row = e.currentTarget.closest('tr');
+    const filename = row.cells[1]?.textContent || row.cells[0]?.textContent;
+    
+    if (confirm(`Are you sure you want to delete "${filename}"?`)) {
+        showNotification(`Deleting: ${filename}`, 'warning');
+        
+        // Animate row removal
+        row.style.transition = 'all 0.3s ease';
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+            row.remove();
+            showNotification(`Deleted: ${filename}`, 'success');
+            updateStats();
+        }, 300);
+    }
+}
+
+// Handle Cancel
+function handleCancel(e) {
+    const row = e.currentTarget.closest('tr');
+    const filename = row.cells[1].textContent;
+    
+    if (confirm(`Cancel processing for "${filename}"?`)) {
+        showNotification(`Cancelled: ${filename}`, 'warning');
+        
+        setTimeout(() => {
+            row.remove();
+            updateStats();
+        }, 300);
+    }
+}
+
+// Handle Retry
+function handleRetry(e) {
+    const row = e.currentTarget.closest('tr');
+    const filename = row.cells[0].textContent;
+    
+    showNotification(`Retrying: ${filename}`, 'info');
+    
+    // Simulate retry
+    setTimeout(() => {
+        row.remove();
+        showNotification(`${filename} added to processing queue`, 'success');
+        updateStats();
+    }, 1000);
+}
+
+// Handle Pagination
+function handlePagination(e) {
+    const btn = e.currentTarget;
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.pagination-btn').forEach(b => {
+        b.classList.remove('active');
+    });
+    
+    // Add active class if it's a number button
+    if (!btn.textContent.includes('Previous') && !btn.textContent.includes('Next')) {
+        btn.classList.add('active');
+    }
+    
+    // Scroll to top of table
+    const tableContainer = document.querySelector('.table-container');
+    if (tableContainer) {
+        tableContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    showNotification(`Loading page ${btn.textContent}...`, 'info');
+}
+
+// Animate Stats
+function animateStats() {
+    const statCards = document.querySelectorAll('.stat-card h3');
+    
+    statCards.forEach(stat => {
+        const targetValue = parseInt(stat.textContent);
+        let currentValue = 0;
+        const increment = targetValue / 50;
+        const duration = 1000;
+        const stepTime = duration / 50;
+        
+        const timer = setInterval(() => {
+            currentValue += increment;
+            if (currentValue >= targetValue) {
+                stat.textContent = targetValue;
+                clearInterval(timer);
+            } else {
+                stat.textContent = Math.floor(currentValue);
+            }
+        }, stepTime);
+    });
+}
+
+// Update Stats
+function updateStats() {
+    // Recalculate stats based on current table data
+    const allRows = document.querySelectorAll('.data-table tbody tr');
+    const visibleRows = Array.from(allRows).filter(row => row.style.display !== 'none');
+    
+    console.log('Stats updated. Total visible rows:', visibleRows.length);
+}
+
+// Setup Table Interactions
+function setupTableInteractions() {
+    const tableRows = document.querySelectorAll('.data-table tbody tr');
+    
+    tableRows.forEach(row => {
+        // Add click effect
+        row.addEventListener('click', function(e) {
+            // Don't highlight if clicking a button
+            if (e.target.closest('button')) return;
+            
+            // Remove highlight from all rows
+            tableRows.forEach(r => r.style.background = '');
+            
+            // Highlight clicked row
+            this.style.background = 'rgba(37, 99, 235, 0.05)';
+        });
+    });
+}
+
+// Simulate Processing Progress
+function simulateProcessingProgress() {
+    const progressBars = document.querySelectorAll('.progress-fill');
+    
+    progressBars.forEach((bar, index) => {
+        const currentProgress = parseInt(bar.style.width) || 0;
+        
+        if (currentProgress < 100 && currentProgress > 0) {
+            // Simulate progress
+            const interval = setInterval(() => {
+                let progress = parseInt(bar.style.width) || 0;
+                progress += Math.random() * 5;
+                
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    showNotification('Video processing completed!', 'success');
+                }
+                
+                bar.style.width = progress + '%';
+                bar.textContent = Math.floor(progress) + '%';
+            }, 2000);
+        }
+    });
+}
+
+// Show Notification
+function showNotification(message, type = 'info') {
+    // Remove existing notification
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    // Add styles
+    Object.assign(notification.style, {
+        position: 'fixed',
+        top: '90px',
+        right: '20px',
+        padding: '1rem 1.5rem',
+        borderRadius: '8px',
+        color: 'white',
+        fontWeight: '600',
+        zIndex: '9999',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        animation: 'slideIn 0.3s ease',
+        maxWidth: '400px'
+    });
+    
+    // Set background color based on type
+    const colors = {
+        info: '#3b82f6',
+        success: '#10b981',
+        warning: '#f59e0b',
+        error: '#ef4444'
+    };
+    notification.style.background = colors[type] || colors.info;
+    
+    // Add to document
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Debounce function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Add CSS for notifications
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Log dashboard loaded
+console.log('%c Nepal Traffic Police System ', 'background: #2563eb; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold;');
+console.log('Dashboard loaded successfully ✓');
+    </script>
+</body>
+</html>

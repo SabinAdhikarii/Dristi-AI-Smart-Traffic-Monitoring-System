@@ -1,63 +1,112 @@
-# db.py
+"""
+Database Configuration
+"""
 import psycopg2
+from psycopg2.extras import RealDictCursor
 
-def get_connection():
-    """
-    Returns a connection to the TrafficDB PostgreSQL database.
-    Make sure your DB, user, and password are correct.
-    """
+DB_CONFIG = {
+    'host': 'localhost',
+    'database': 'Nepal-Traffic-DB',
+    'user': 'postgres',
+    'password': 'S@bin123456',
+    'port': '5432'
+}
+
+def get_db_connection():
+    """Get PostgreSQL database connection"""
     try:
-        conn = psycopg2.connect(
-            host="localhost",
-            database="TrafficDB",
-            user="postgres",
-            password="postgres",  # <-- check your actual postgres password
-            port="5432"
-        )
+        conn = psycopg2.connect(**DB_CONFIG)
         return conn
     except Exception as e:
-        print("ERROR: Could not connect to database:", e)
+        print(f"Database connection error: {e}")
         return None
 
-
-def insert_citizen(first_name, last_name, citizenship_number, issued_district,
-                   date_of_birth, mobile_number, email, password):
+def save_violation(session_id, violation_type, vehicle_type, timestamp_seconds, 
+                   frame_number, confidence, screenshot_path, video_filename,
+                   license_plate=None, plate_confidence=None, plate_image_path=None):
     """
-    Inserts a new citizen record into the citizens table.
+    Save violation to database with license plate data
     """
-    conn = get_connection()
-    if conn is None:
-        print("Insert failed: no DB connection")
+    conn = get_db_connection()
+    if not conn:
         return False
-
+    
     try:
-        cursor = conn.cursor()
-        query = """
-            INSERT INTO citizens 
-            (first_name, last_name, citizenship_number, issued_district, date_of_birth, mobile_number, email, password)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """
-        cursor.execute(query, (
-            first_name, last_name, citizenship_number, issued_district,
-            date_of_birth, mobile_number, email, password
+        cur = conn.cursor()
+        
+        cur.execute("""
+            INSERT INTO violations (
+                session_id, violation_type, vehicle_type,
+                timestamp_seconds, frame_number, confidence,
+                screenshot_path, video_filename, license_plate,
+                plate_confidence, plate_image_path
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            session_id, 
+            violation_type, 
+            vehicle_type,
+            timestamp_seconds, 
+            frame_number, 
+            confidence,
+            screenshot_path, 
+            video_filename, 
+            license_plate,
+            plate_confidence,
+            plate_image_path
         ))
+        
         conn.commit()
-        cursor.close()
+        cur.close()
         conn.close()
-        print("Citizen inserted successfully ✅")
         return True
-
+        
     except Exception as e:
-        print("Database error:", e)
+        print(f"Error saving violation: {e}")
+        conn.close()
         return False
 
+def get_recent_sessions(limit=5):
+    """Get list of recent processing sessions with violation counts"""
+    conn = get_db_connection()
+    if not conn:
+        return []
+    try:
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("""
+            SELECT 
+                session_id, 
+                MAX(video_filename) as video_filename,
+                COUNT(*) as violation_count,
+                MAX(created_at) as last_processed
+            FROM violations
+            GROUP BY session_id
+            ORDER BY last_processed DESC
+            LIMIT %s
+        """, (limit,))
+        results = cur.fetchall()
+        cur.close()
+        conn.close()
+        return results
+    except Exception as e:
+        print(f"Error fetching recent sessions: {e}")
+        return []
 
-# Optional: test run
-if __name__ == "__main__":
-    # Hardcoded test insert
-    success = insert_citizen(
-        "Sabin", "Adhikari", "12-34-567890", "Kathmandu",
-        "2003-05-21", "+9779812345678", "sabin@example.com", "Test@1234"
-    )
-    if success:
-        print("Test citizen added to DB")
+def get_violations_by_session(session_id):
+    """Get all violations for a specific session"""
+    conn = get_db_connection()
+    if not conn:
+        return []
+    try:
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("""
+            SELECT * FROM violations 
+            WHERE session_id = %s 
+            ORDER BY timestamp_seconds
+        """, (session_id,))
+        results = cur.fetchall()
+        cur.close()
+        conn.close()
+        return results
+    except Exception as e:
+        print(f"Error fetching violations: {e}")
+        return []

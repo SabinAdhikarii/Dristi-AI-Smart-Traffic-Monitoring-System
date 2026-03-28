@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nepal Traffic Police – Sign In / Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --deep-navy: #0D1F3C;
+      --medium-navy: #162847;
+      --light-navy: #1E3A5F;
+      --rich-gold: #C8922A;
+      --soft-gold: #E2A83A;
+      --pale-gold: #F5E6C8;
+      --deep-red: #9B1C1C;
+      --off-white: #FAFAF8;
+      --warm-gray: #F0EDE6;
+      --cool-gray: #8A96A3;
+      --subtle-border: rgba(200,146,42,0.2);
+      --gentle-shadow: 0 4px 24px rgba(13,31,60,0.15);
+    }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background-color: var(--deep-navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: var(--off-white);
+      line-height: 1.5;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        repeating-linear-gradient(45deg, 
+          transparent 0 40px, 
+          rgba(200,146,42,0.02) 40px 41px
+        ),
+        repeating-linear-gradient(-45deg, 
+          transparent 0 40px, 
+          rgba(200,146,42,0.02) 40px 41px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-header {
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(180deg, #0A1828 0%, var(--deep-navy) 100%);
+      border-bottom: 2px solid var(--rich-gold);
+      padding: 0.875rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.125rem;
+      flex-wrap: wrap;
+    }
+
+    .header-emblem {
+      width: 56px;
+      height: 56px;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      flex: 1;
+    }
+
+    .header-title .gov-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rich-gold);
+      font-weight: 600;
+    }
+
+    .header-title h1 {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--off-white);
+      line-height: 1.2;
+      margin-top: 0.2rem;
+    }
+
+    .header-title .subhead {
+      font-size: 0.7rem;
+      color: var(--cool-gray);
+      letter-spacing: 0.05em;
+      margin-top: 0.1rem;
+    }
+
+    .header-aside {
+      text-align: right;
+    }
+
+    .header-aside .nepali-text {
+      font-size: 0.85rem;
+      color: var(--soft-gold);
+      font-weight: 500;
+    }
+
+    .header-aside .current-date {
+      font-size: 0.7rem;
+      color: var(--cool-gray);
+    }
+
+    .gold-bar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--deep-red) 0%, var(--rich-gold) 50%, var(--deep-red) 100%);
+      position: relative;
+      z-index: 10;
+    }
+
+    .main-content {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.25rem;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(160deg, var(--medium-navy) 0%, #111E30 100%);
+      border: 1px solid var(--subtle-border);
+      border-radius: 2px;
+      box-shadow: var(--gentle-shadow), 0 0 0 1px rgba(200,146,42,0.1);
+      overflow: hidden;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--light-navy), #0F2040);
+      border-bottom: 1px solid var(--subtle-border);
+      padding: 1.75rem 2.25rem 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .card-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 2.25rem;
+      right: 2.25rem;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rich-gold), transparent);
+    }
+
+    .header-shield {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 0.875rem;
+      display: block;
+    }
+
+    .card-header h2 {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--off-white);
+      letter-spacing: 0.02em;
+    }
+
+    .card-header p {
+      font-size: 0.75rem;
+      color: var(--cool-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.25rem;
+    }
+
+    .tab-nav {
+      display: flex;
+      border-bottom: 1px solid var(--subtle-border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.875rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cool-gray);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--soft-gold);
+      border-bottom-color: var(--soft-gold);
+    }
+
+    .form-container {
+      padding: 2rem 2.25rem 2.25rem;
+    }
+
+    .form-panel {
+      display: none;
+    }
+
+    .form-panel.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rich-gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .required-star {
+      color: var(--deep-red);
+      margin-left: 0.2rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--cool-gray);
+      pointer-events: none;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(200,146,42,0.2);
+      border-radius: 2px;
+      padding: 0.7rem 0.875rem 0.7rem 2.5rem;
+      color: var(--off-white);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--rich-gold);
+      background: rgba(200,146,42,0.06);
+    }
+
+    .form-select {
+      color: var(--cool-gray);
+      appearance: none;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--rich-gold);
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+    }
+
+    .checkbox-row label {
+      font-size: 0.8rem;
+      color: var(--cool-gray);
+      line-height: 1.5;
+    }
+
+    .checkbox-row a {
+      color: var(--soft-gold);
+      text-decoration: none;
+    }
+
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 0.8rem;
+      color: var(--soft-gold);
+      text-decoration: none;
+      margin-top: -0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, var(--rich-gold) 0%, #A57520 100%);
+      border: none;
+      border-radius: 2px;
+      color: #0A1828;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+    }
+
+    .secondary-btn {
+      width: 100%;
+      padding: 0.85rem;
+      background: rgba(200,146,42,0.12);
+      border: 1px solid var(--subtle-border);
+      border-radius: 2px;
+      color: var(--soft-gold);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .secondary-btn:hover {
+      background: rgba(200,146,42,0.2);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(200,146,42,0.15);
+    }
+
+    .divider-text {
+      font-size: 0.7rem;
+      color: var(--cool-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .info-note {
+      background: rgba(200,146,42,0.07);
+      border-left: 3px solid var(--rich-gold);
+      border-radius: 0 2px 2px 0;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: var(--cool-gray);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .strength-meter {
+      display: flex;
+      gap: 0.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .strength-meter span {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.08);
+      transition: background 0.3s;
+    }
+
+    .strength-meter.weak span:nth-child(1) {
+      background: var(--deep-red);
+    }
+
+    .strength-meter.medium span:nth-child(1),
+    .strength-meter.medium span:nth-child(2) {
+      background: var(--rich-gold);
+    }
+
+    .strength-meter.strong span {
+      background: #2d8a4e;
+    }
+
+    .card-footer {
+      padding: 0.875rem 2.25rem;
+      border-top: 1px solid rgba(200,146,42,0.1);
+      background: rgba(0,0,0,0.15);
+      text-align: center;
+    }
+
+    .page-footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid rgba(200,146,42,0.15);
+      background: rgba(0,0,0,0.3);
+      padding: 0.875rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .page-footer p {
+      font-size: 0.7rem;
+      color: var(--cool-gray);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      color: var(--soft-gold);
+      text-decoration: none;
+      font-size: 0.7rem;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 520px) {
+      .page-header {
+        padding: 0.75rem 1rem;
+      }
+      
+      .header-aside {
+        display: none;
+      }
+      
+      .form-container {
+        padding: 1.5rem 1.25rem 1.75rem;
+      }
+      
+      .card-footer {
+        padding: 0.75rem 1.25rem;
+      }
+      
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header class="page-header">
+  <svg class="header-emblem" viewBox="0 0 100 100" fill="none">
+    <circle cx="50" cy="50" r="46" fill="#0D1F3C" stroke="#C8922A" stroke-width="2"/>
+    <path d="M50 18 L54 32 L68 32 L57 41 L61 55 L50 46 L39 55 L43 41 L32 32 L46 32 Z" fill="#C8922A"/>
+    <path d="M30 62 Q50 55 70 62 Q65 78 50 82 Q35 78 30 62Z" fill="none" stroke="#C8922A" stroke-width="1.5"/>
+    <text x="50" y="95" text-anchor="middle" font-size="7" fill="#C8922A" font-family="serif">नेपाल</text>
+  </svg>
+
+  <div class="header-title">
+    <div class="gov-tag">Government of Nepal · Ministry of Home Affairs</div>
+    <h1>Nepal Traffic Police</h1>
+    <div class="subhead">Citizen Services Portal · ntp.gov.np</div>
+  </div>
+
+  <div class="header-aside">
+    <div class="nepali-text">नेपाल ट्राफिक प्रहरी</div>
+    <div class="current-date" id="displayDate"></div>
+  </div>
+</header>
+
+<div class="gold-bar"></div>
+
+<main class="main-content">
+  <div class="auth-card">
+
+    <div class="card-header">
+      <svg class="header-shield" viewBox="0 0 80 90">
+        <path d="M40 4 L72 18 L72 50 C72 68 57 82 40 88 C23 82 8 68 8 50 L8 18 Z" fill="#162847" stroke="#C8922A" stroke-width="2"/>
+        <text x="40" y="44" text-anchor="middle" font-size="22" fill="#C8922A" font-family="serif">⚖</text>
+        <text x="40" y="62" text-anchor="middle" font-size="7.5" fill="#C8922A" font-weight="700">TRAFFIC</text>
+        <text x="40" y="72" text-anchor="middle" font-size="7" fill="rgba(200,146,42,0.6)">POLICE</text>
+      </svg>
+      <h2>Citizen Service Access</h2>
+      <p>Secure Authentication Portal</p>
+    </div>
+
+    <div class="tab-nav">
+      <button type="button" class="tab-btn active" onclick="showPanel('login')">Sign In</button>
+      <button type="button" class="tab-btn" onclick="showPanel('register')">Register</button>
+    </div>
+
+    <div class="form-container">
+
+      <!-- LOGIN FORM -->
+      <div class="form-panel active" id="loginPanel">
+        <div class="info-note">
+          Use your registered <strong>Citizenship Number</strong> to login.
+        </div>
+        <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+          <div class="form-group">
+            <label class="form-label">Citizenship Number <span class="required-star">*</span></label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                <path d="M16 12H8M12 8v8"/>
+              </svg>
+              <input class="form-input" type="text" name="username" placeholder="e.g. 12-34-567890" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password <span class="required-star">*</span></label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <input class="form-input" type="password" name="password" placeholder="Enter your password" required>
+            </div>
+          </div>
+
+          <a href="#" class="forgot-link">Forgot password?</a>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="rememberMe" name="remember_me">
+            <label for="rememberMe">Keep me signed in on this device for 30 days</label>
+          </div>
+
+          <button type="submit" class="submit-btn">Sign In to Portal</button>
+        </form>
+
+        <div class="divider">
+          <span class="divider-line"></span>
+          <span class="divider-text">or</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <button type="button" class="secondary-btn" onclick="showPanel('register')">Create a New Account</button>
+      </div>
+
+      <!-- REGISTRATION FORM -->
+      <div class="form-panel" id="registerPanel">
+        <div class="info-note">
+          Registration requires a valid <strong>Nepali Citizenship Certificate</strong>.
+        </div>
+        <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">First Name <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
+                <input class="form-input" type="text" name="first_name" placeholder="First name" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Last Name <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="8" r="4"/>
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
+                <input class="form-input" type="text" name="last_name" placeholder="Last name" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Citizenship Number <span class="required-star">*</span></label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                <path d="M2 10h20"/>
+              </svg>
+              <input class="form-input" type="text" name="citizenship_number" placeholder="e.g. 12-34-567890" required>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">Issued District <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z"/>
+                  <circle cx="12" cy="9" r="2.5"/>
+                </svg>
+                <select class="form-select" name="issued_district" required>
+                  <option value="">Select district</option>
+                  <option value="Kathmandu">Kathmandu</option>
+                  <option value="Lalitpur">Lalitpur</option>
+                  <option value="Bhaktapur">Bhaktapur</option>
+                  <option value="Pokhara">Pokhara</option>
+                  <option value="Chitwan">Chitwan</option>
+                  <option value="Kaski">Kaski</option>
+                  <option value="Syangja">Syangja</option>
+                  <option value="Tanahun">Tanahun</option>
+                  <option value="Nuwakot">Nuwakot</option>
+                  <option value="Dhading">Dhading</option>
+                  <option value="Kavrepalanchowk">Kavrepalanchowk</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Date of Birth <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+                <input class="form-input" type="date" name="date_of_birth" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mobile Number <span class="required-star">*</span></label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2"/>
+                <circle cx="12" cy="17" r="1"/>
+              </svg>
+              <input class="form-input" type="tel" name="mobile_number" placeholder="+977 98XXXXXXXX" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-10 7L2 7"/>
+              </svg>
+              <input class="form-input" type="email" name="email" placeholder="your@email.com (optional)">
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">Password <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <input class="form-input" type="password" name="password" placeholder="Min. 8 characters" id="regPassword" oninput="checkPasswordStrength(this.value)" required>
+              </div>
+              <div class="strength-meter" id="strengthMeter">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirm Password <span class="required-star">*</span></label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <input class="form-input" type="password" name="confirm_password" placeholder="Re-enter password" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="acceptTerms" required>
+            <label for="acceptTerms">I confirm that all information provided is accurate and I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</label>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit Registration</button>
+        </form>
+
+        <div class="divider">
+          <span class="divider-line"></span>
+          <span class="divider-text">Already registered?</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <button type="button" class="secondary-btn" onclick="showPanel('login')">Sign In to Existing Account</button>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <p>Secured with SSL Encryption · All data protected under GoN Data Privacy Act</p>
+    </div>
+  </div>
+</main>
+
+<footer class="page-footer">
+  <p>© 2081 B.S. / 2025 A.D. Nepal Traffic Police, Naxal, Kathmandu</p>
+  <div class="footer-links">
+    <a href="#">Help & Support</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Accessibility</a>
+  </div>
+</footer>
+
+<script>
+  function updateDate() {
+    const today = new Date();
+    const dateDisplay = today.toLocaleDateString('en-GB', { 
+      weekday: 'short', 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric' 
+    });
+    document.getElementById('displayDate').textContent = dateDisplay;
+  }
+  updateDate();
+
+  function showPanel(panelName) {
+    const loginPanel = document.getElementById('loginPanel');
+    const registerPanel = document.getElementById('registerPanel');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+
+    if (panelName === 'login') {
+      loginPanel.classList.add('active');
+      registerPanel.classList.remove('active');
+      tabButtons[0].classList.add('active');
+      tabButtons[1].classList.remove('active');
+    } else {
+      registerPanel.classList.add('active');
+      loginPanel.classList.remove('active');
+      tabButtons[1].classList.add('active');
+      tabButtons[0].classList.remove('active');
+    }
+  }
+
+  function checkPasswordStrength(password) {
+    const meter = document.getElementById('strengthMeter');
+    meter.className = 'strength-meter';
+    
+    if (password.length === 0) return;
+    
+    if (password.length < 6) {
+      meter.classList.add('weak');
+    } else if (password.length < 10 || !/[0-9]/.test(password) || !/[A-Z]/.test(password)) {
+      meter.classList.add('medium');
+    } else {
+      meter.classList.add('strong');
+    }
+  }
+</script>
+
+</body>
+</html>

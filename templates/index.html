@@ -1,310 +1,947 @@
+{% extends "base.html" %}
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="ne">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>काठमाण्डौ उपत्यका ट्राफिक प्रहरी कार्यालय</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 :root {
-  --navy:       #0c1c38;
-  --navy-mid:   #152d58;
-  --blue:       #1a56a0;
-  --blue-light: #2572c8;
-  --gold:       #b8860b;
-  --gold-bright:#d4a017;
-  --gold-pale:  #fdf6e3;
-  --red:        #a81c1c;
-  --bg:         #eef1f8;
-  --bg2:        #e6eaf4;
+  --ink:        #1a1a1a;
+  --ink-mid:    #2d2d2d;
+  --ink-faint:  #6b6b6b;
+  --navy:       #0d2040;
+  --blue:       #1640a0;
+  --blue-dim:   #1a3a8f;
+  --gold:       #c49a00;
+  --gold-pale:  #f9f3dc;
+  --red:        #b01c1c;
+  --paper:      #f5f2eb;
+  --paper2:     #edeae0;
   --white:      #ffffff;
-  --border:     #cdd4e6;
-  --text:       #18243c;
-  --muted:      #5a6479;
-  --sh1:        0 1px 4px rgba(12,28,56,0.07);
-  --sh2:        0 4px 18px rgba(12,28,56,0.12);
-  --sh3:        0 8px 36px rgba(12,28,56,0.17);
-  --r:          5px;
+  --rule:       #d0ccc0;
+  --rule-dark:  #a09a8c;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.65}
-img{display:block;max-width:100%}
-a{text-decoration:none;color:inherit}
 
-/* ANIMATIONS */
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideR{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
-@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes pulseRed{0%,100%{box-shadow:0 0 0 0 rgba(168,28,28,.45)}60%{box-shadow:0 0 0 14px rgba(168,28,28,0)}}
-@keyframes barGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
-/* ── UTILITY BAR ── */
-.util{background:var(--navy);padding:5px 0;font-size:11.5px;color:rgba(255,255,255,.6)}
-.util-inner{max-width:1240px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;align-items:center}
-.util-left{display:flex;align-items:center;gap:6px}
-.util-left i{font-size:11px;color:var(--gold-bright)}
-.lang-wrap{display:flex;gap:4px}
-.lang-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);padding:2px 11px;cursor:pointer;font-size:11px;letter-spacing:.4px;border-radius:2px;font-family:'DM Sans',sans-serif;transition:all .2s}
-.lang-btn.active,.lang-btn:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:600}
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+a { text-decoration: none; color: inherit; }
+img { display: block; max-width: 100%; }
+
+/* ── MASTHEAD / UTILITY BAR ── */
+.topbar {
+  background: var(--navy);
+  padding: 6px 0;
+  border-bottom: 2px solid var(--gold);
+}
+.topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.topbar-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.5px;
+}
+.topbar-date strong {
+  color: rgba(255,255,255,0.8);
+}
+.lang-wrap { display: flex; gap: 0; }
+.lang-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.6);
+  padding: 3px 12px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: all 0.15s;
+}
+.lang-btn:first-child { border-radius: 2px 0 0 2px; }
+.lang-btn:last-child  { border-radius: 0 2px 2px 0; border-left: none; }
+.lang-btn.active,
+.lang-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--navy); font-weight: 600; }
 
 /* ── HEADER ── */
-header{background:var(--white);border-bottom:3px solid var(--gold);box-shadow:var(--sh2);position:sticky;top:0;z-index:200}
-.hdr{max-width:1240px;margin:0 auto;padding:13px 28px;display:flex;align-items:center;gap:18px}
-.logo-img{width:68px;height:68px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;box-shadow:var(--sh1);flex-shrink:0}
-.logo-fallback{width:68px;height:68px;border-radius:50%;border:3px solid var(--gold);background:linear-gradient(145deg,var(--navy) 0%,var(--navy-mid) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--sh1)}
-.logo-fallback i{font-size:22px;color:var(--gold-bright);margin-bottom:3px}
-.logo-fallback span{font-size:8px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.7);text-transform:uppercase}
-.hdr-title{flex:1}
-.hdr-title h1{font-family:'Noto Sans Devanagari',sans-serif;font-size:22px;font-weight:900;color:var(--navy);line-height:1.2;letter-spacing:-.2px}
-.hdr-title .en{font-size:12.5px;color:var(--muted);margin-top:3px;letter-spacing:.5px;text-transform:uppercase}
-.hdr-title .loc{font-size:11.5px;color:var(--blue);margin-top:4px;display:flex;align-items:center;gap:5px;font-weight:500}
-.hdr-title .loc i{font-size:10px}
-.emrg{background:var(--navy);border-left:4px solid var(--gold);padding:13px 18px;border-radius:var(--r);min-width:205px;flex-shrink:0}
-.emrg-lbl{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold-bright);margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.emrg-lbl i{font-size:10px}
-.emrg-row{font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.9;display:flex;align-items:center;gap:7px}
-.emrg-row i{font-size:11px;color:rgba(255,255,255,.45);width:13px;flex-shrink:0}
-.emrg-num{font-weight:700;color:#fff}
+header {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 1px 0 var(--rule), 0 3px 12px rgba(0,0,0,0.06);
+}
+.hdr {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 20px;
+  align-items: center;
+  min-height: 80px;
+}
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid var(--rule-dark);
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.logo-circle i { font-size: 20px; color: var(--gold); }
+.hdr-texts h1 {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.25;
+}
+.hdr-texts .en {
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.hdr-texts .loc {
+  font-size: 11px;
+  color: var(--blue);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.hdr-texts .loc i { font-size: 9px; }
+
+.emrg {
+  border-left: 3px solid var(--navy);
+  padding: 10px 0 10px 16px;
+}
+.emrg-lbl {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 6px;
+}
+.emrg-row {
+  font-size: 12px;
+  color: var(--ink-mid);
+  line-height: 1.8;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.emrg-row i { font-size: 10px; color: var(--ink-faint); width: 12px; }
+.emrg-num { font-weight: 700; color: var(--navy); }
 
 /* ── NAV ── */
-nav{background:linear-gradient(90deg,var(--navy-mid),var(--navy));border-bottom:2px solid var(--gold)}
-.nav-inner{max-width:1240px;margin:0 auto;display:flex;padding:0 18px}
-.nav-link{color:rgba(255,255,255,.78);padding:14px 20px;font-size:12.5px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;position:relative;transition:color .2s;display:flex;align-items:center;gap:7px;white-space:nowrap}
-.nav-link i{font-size:12px;opacity:.75}
-.nav-link::after{content:'';position:absolute;bottom:0;left:50%;right:50%;height:3px;background:var(--gold-bright);transition:left .25s,right .25s;border-radius:2px 2px 0 0}
-.nav-link:hover,.nav-link.active{color:#fff}
-.nav-link:hover i,.nav-link.active i{opacity:1}
-.nav-link:hover::after,.nav-link.active::after{left:0;right:0}
+nav {
+  background: var(--navy);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.nav-link {
+  color: rgba(255,255,255,0.65);
+  padding: 13px 18px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.nav-link i { font-size: 11px; opacity: 0.6; }
+.nav-link:hover,
+.nav-link.active { color: #fff; border-bottom-color: var(--gold); }
+.nav-link:hover i,
+.nav-link.active i { opacity: 1; }
 
 /* ── HERO ── */
-.hero{position:relative;height:400px;overflow:hidden;background:var(--navy)}
-.slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease}
-.slide.active{opacity:1}
-.slide-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.42)}
-.slide-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,28,56,.72) 0%,rgba(12,28,56,.18) 70%)}
-.slide-content{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:0 60px;height:100%;display:flex;flex-direction:column;justify-content:center}
-.slide-tag{display:inline-flex;align-items:center;gap:7px;background:var(--gold);color:var(--navy);font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:4px 12px;border-radius:2px;margin-bottom:16px;width:fit-content}
-.slide-tag i{font-size:10px}
-.slide-h{font-family:'Libre Baskerville',serif;font-size:38px;font-weight:700;color:#fff;line-height:1.2;max-width:560px;text-shadow:0 2px 24px rgba(0,0,0,.4);margin-bottom:12px}
-.slide-p{font-size:14.5px;color:rgba(255,255,255,.82);max-width:460px;line-height:1.7;margin-bottom:24px}
-.slide-btn{display:inline-flex;align-items:center;gap:9px;background:var(--gold);color:var(--navy);padding:11px 24px;font-weight:700;font-size:13px;letter-spacing:.3px;border-radius:3px;border:none;cursor:pointer;transition:background .2s,transform .2s;font-family:'DM Sans',sans-serif}
-.slide-btn i{font-size:12px}
-.slide-btn:hover{background:var(--gold-bright);transform:translateY(-2px)}
-.hero-prev,.hero-next{position:absolute;top:50%;transform:translateY(-50%);z-index:10;background:rgba(255,255,255,.13);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.25);color:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:background .2s}
-.hero-prev:hover,.hero-next:hover{background:rgba(184,134,11,.65)}
-.hero-prev{left:18px}
-.hero-next{right:18px}
-.hero-dots{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
-.hdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.38);border:none;cursor:pointer;transition:background .3s,width .3s}
-.hdot.active{background:var(--gold-bright);width:26px;border-radius:4px}
+.hero {
+  position: relative;
+  height: 420px;
+  background: var(--navy);
+  overflow: hidden;
+}
+.slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.85s ease; }
+.slide.active { opacity: 1; }
+.slide-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.35) saturate(0.8);
+}
+.slide-grad {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(13,32,64,0.85) 0%, rgba(13,32,64,0.3) 65%, transparent 100%);
+}
+.slide-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+.slide-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.slide-eyebrow::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+}
+.slide-h {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.15;
+  max-width: 520px;
+  margin-bottom: 16px;
+}
+.slide-p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.72);
+  max-width: 440px;
+  line-height: 1.75;
+  margin-bottom: 26px;
+}
+.slide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.5);
+  color: #fff;
+  padding: 10px 22px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: background 0.2s, border-color 0.2s;
+  width: fit-content;
+}
+.slide-btn i { font-size: 10px; }
+.slide-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.8); }
+
+.hero-prev, .hero-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.7);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+.hero-prev:hover, .hero-next:hover { background: rgba(255,255,255,0.18); }
+.hero-prev { left: 16px; }
+.hero-next { right: 16px; }
+.hero-dots {
+  position: absolute;
+  bottom: 18px;
+  left: 48px;
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+.hdot {
+  width: 20px;
+  height: 2px;
+  background: rgba(255,255,255,0.28);
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, width 0.3s;
+}
+.hdot.active { background: var(--gold); width: 36px; }
 
 /* ── TICKER ── */
-.ticker{background:var(--gold);height:33px;display:flex;overflow:hidden;align-items:center}
-.ticker-label{background:var(--navy);color:var(--gold-bright);font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;padding:0 16px;height:100%;display:flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0}
-.ticker-label i{font-size:10px}
-.ticker-track{flex:1;overflow:hidden}
-.ticker-scroll{display:inline-flex;gap:60px;animation:ticker 30s linear infinite;white-space:nowrap;font-size:12.5px;font-weight:600;color:var(--navy);padding-left:28px}
-.ti::before{content:'';display:inline-block;width:5px;height:5px;background:var(--navy);border-radius:50%;margin-right:10px;vertical-align:middle}
+.ticker {
+  background: var(--paper2);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  height: 34px;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+}
+.ticker-label {
+  background: var(--navy);
+  color: var(--gold);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0 16px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ticker-label i { font-size: 6px; color: #e74c3c; animation: blink 1.2s step-end infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.ticker-track { flex: 1; overflow: hidden; }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ticker-scroll {
+  display: inline-flex;
+  gap: 60px;
+  animation: ticker 32s linear infinite;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--ink-mid);
+  padding-left: 24px;
+  font-weight: 400;
+}
+.ti { color: var(--ink-mid); }
+.ti::before {
+  content: '—';
+  margin-right: 8px;
+  color: var(--gold);
+  font-weight: 600;
+}
 
-/* ── PAGE LAYOUT ── */
-.page{max-width:1240px;margin:0 auto;padding:32px 28px}
+/* ── PAGE ── */
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 36px 24px;
+}
 
-/* ── SECTION HEADER ── */
-.sh{display:flex;align-items:center;gap:12px;margin-bottom:22px}
-.sh-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
-.sh-title{font-family:'Libre Baskerville',serif;font-size:20px;font-weight:700;color:var(--navy);white-space:nowrap}
-.sh-icon{width:34px;height:34px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sh-icon i{font-size:14px;color:var(--gold-bright)}
-.sh-badge{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);padding:2px 10px;border-radius:20px;background:var(--gold-pale)}
+/* ── SECTION HEADERS ── */
+.sh {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+}
+.sh-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.sh-sub {
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.sh-rule { flex: 1; }
+.sh-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  color: var(--red);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  padding: 2px 8px;
+}
 
 /* ── SERVICES ── */
-.svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:34px}
-.svc-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:26px 16px 22px;text-align:center;cursor:pointer;box-shadow:var(--sh1);transition:transform .28s,box-shadow .28s,border-color .28s;position:relative;overflow:hidden;animation:fadeUp .5s ease both}
-.svc-card:nth-child(1){animation-delay:.05s}
-.svc-card:nth-child(2){animation-delay:.1s}
-.svc-card:nth-child(3){animation-delay:.15s}
-.svc-card:nth-child(4){animation-delay:.2s}
-.svc-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .3s}
-.svc-card:hover{transform:translateY(-5px);box-shadow:var(--sh3);border-color:var(--blue-light)}
-.svc-card:hover::after{transform:scaleX(1)}
-.svc-img-wrap{width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto 14px;border:2px solid var(--border);flex-shrink:0;background:var(--bg2)}
-.svc-img-wrap img{width:100%;height:100%;object-fit:cover}
-.svc-icon-wrap{width:62px;height:62px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.svc-icon-wrap i{font-size:24px}
-.si-b{background:#dbeafe} .si-b i{color:#1d4ed8}
-.si-g{background:var(--gold-pale)} .si-g i{color:var(--gold)}
-.si-r{background:#fee2e2} .si-r i{color:var(--red)}
-.si-t{background:#d1fae5} .si-t i{color:#065f46}
-.svc-name{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:5px;line-height:1.35}
-.svc-desc{font-size:12px;color:var(--muted);line-height:1.55}
+.svc-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-bottom: 40px;
+}
+.svc-card {
+  background: var(--white);
+  padding: 28px 20px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.svc-card:hover { background: var(--gold-pale); }
+.svc-card:hover .svc-icon-ring { border-color: var(--gold); }
+.svc-icon-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1.5px solid var(--rule-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  transition: border-color 0.2s;
+}
+.svc-icon-ring i { font-size: 20px; color: var(--navy); }
+.svc-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.svc-desc {
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  line-height: 1.6;
+}
 
 /* ── MAIN GRID ── */
-.main-grid{display:grid;grid-template-columns:1fr 335px;gap:26px;margin-bottom:34px}
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 40px;
+  margin-bottom: 40px;
+}
 
 /* ── NEWS ── */
-.news-stack{display:flex;flex-direction:column;gap:15px}
-.nc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:flex;box-shadow:var(--sh1);transition:transform .25s,box-shadow .25s,border-color .25s;animation:fadeUp .5s ease both}
-.nc:nth-child(1){animation-delay:0s}
-.nc:nth-child(2){animation-delay:.1s}
-.nc:nth-child(3){animation-delay:.2s}
-.nc:hover{transform:translateX(5px);box-shadow:var(--sh2);border-color:var(--blue-light)}
-.nc-bar{width:5px;background:linear-gradient(180deg,var(--blue),var(--blue-light));flex-shrink:0}
-.nc-thumb{width:130px;flex-shrink:0;overflow:hidden;background:var(--bg2)}
-.nc-thumb img{width:100%;height:100%;object-fit:cover}
-.nc-body{padding:16px 18px;flex:1}
-.nc-meta{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
-.nc-date{background:var(--bg2);color:var(--muted);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:flex;align-items:center;gap:5px}
-.nc-date i{font-size:10px}
-.nc-cat{font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--blue)}
-.nc-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:7px;line-height:1.4;cursor:pointer;transition:color .2s}
-.nc-title:hover{color:var(--blue)}
-.nc-desc{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:10px}
-.rm{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--blue);cursor:pointer;transition:gap .2s}
-.rm:hover{gap:11px}
-.rm i{font-size:11px}
-.news-foot{display:flex;justify-content:flex-end;margin-top:18px}
-.btn-main{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:11px 26px;font-size:12.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border-radius:3px;border:2px solid var(--navy);cursor:pointer;transition:all .25s;font-family:'DM Sans',sans-serif}
-.btn-main i{font-size:12px}
-.btn-main:hover{background:transparent;color:var(--navy)}
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 4px;
+}
+.news-stack { display: flex; flex-direction: column; }
+.nc {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  border-bottom: 1px solid var(--rule);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.nc:hover { background: var(--white); }
+.nc:first-child { border-top: 1px solid var(--rule); }
+.nc-thumb {
+  width: 110px;
+  height: 90px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--paper2);
+  align-self: center;
+  margin: 16px 0 16px 0;
+}
+.nc-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.nc-body { padding: 16px 0 16px 18px; }
+.nc-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.nc-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  color: var(--ink-faint);
+}
+.nc-cat {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--blue);
+  background: rgba(22,64,160,0.08);
+  padding: 1px 8px;
+}
+.nc-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+.nc:hover .nc-title { color: var(--blue); }
+.nc-desc {
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  line-height: 1.65;
+  margin-bottom: 8px;
+}
+.rm {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  color: var(--blue);
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.rm i { font-size: 9px; }
+.news-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+.btn-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--navy);
+  color: #fff;
+  padding: 10px 22px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: background 0.2s;
+}
+.btn-main i { font-size: 11px; }
+.btn-main:hover { background: var(--blue-dim); }
 
 /* ── SIDEBAR ── */
-.sidebar{display:flex;flex-direction:column;gap:18px}
-.sc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh1);animation:slideR .5s ease both}
-.sc:nth-child(1){animation-delay:.12s}
-.sc:nth-child(2){animation-delay:.22s}
-.sc:nth-child(3){animation-delay:.32s}
-.sc-hdr{padding:12px 16px;display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border)}
-.sc-hdr i{font-size:14px}
-.sc-body{padding:14px 16px}
+.sidebar { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--rule); background: var(--white); }
+.sc { border-bottom: 1px solid var(--rule); }
+.sc:last-child { border-bottom: none; }
+.sc-hdr {
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.sc-hdr i { font-size: 11px; color: var(--navy); }
+.sc-body { padding: 12px 16px; }
 
 /* Notices */
-.sc-notices .sc-hdr{background:#fdf6e3;color:#7a5c00}
-.sc-notices .sc-hdr i{color:var(--gold)}
-.ni{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px dashed var(--border);cursor:pointer}
-.ni:last-child{border-bottom:none}
-.ni:hover .ni-t{color:var(--blue)}
-.ni-icon{width:30px;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.ni-icon i{font-size:13px}
-.ni-t{font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.4;transition:color .2s}
-.ni-d{font-size:11px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:5px}
-.ni-d i{font-size:10px}
+.ni {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--rule);
+  cursor: pointer;
+}
+.ni:last-child { border-bottom: none; }
+.ni:hover .ni-t { color: var(--blue); }
+.ni-bullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.ni-t {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--navy);
+  line-height: 1.35;
+  transition: color 0.15s;
+}
+.ni-d {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
 
 /* Officer */
-.sc-officer .sc-hdr{background:#e6f7f7;color:#0a5e5e}
-.sc-officer .sc-hdr i{color:#0e7c7b}
-.officer-wrap{text-align:center;padding:6px 0}
-.officer-photo{width:110px;height:124px;border-radius:var(--r);overflow:hidden;margin:0 auto 14px;border:2px solid #b2dfdb;position:relative}
-.officer-photo img{width:100%;height:100%;object-fit:cover;object-position:top}
-.officer-photo-fallback{width:100%;height:100%;background:linear-gradient(145deg,#b2dfdb,#e0f7fa);display:flex;align-items:center;justify-content:center}
-.officer-photo-fallback i{font-size:52px;color:#0e7c7b}
-.officer-badge{position:absolute;bottom:-6px;right:-6px;background:#0e7c7b;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
-.officer-badge i{font-size:11px;color:#fff}
-.of-name{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:3px}
-.of-rank{font-size:11.5px;color:#0e7c7b;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.of-dept{font-size:11.5px;color:var(--muted);margin-top:4px}
+.officer-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 0;
+}
+.officer-photo {
+  width: 64px;
+  height: 72px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  flex-shrink: 0;
+}
+.officer-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.of-name { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+.of-rank { font-size: 11px; color: var(--ink-faint); line-height: 1.5; }
+.of-dept { font-size: 11px; color: var(--ink-faint); }
 
 /* Helpline */
-.sc-helpline .sc-hdr{background:#fff5f5;color:var(--red)}
-.sc-helpline .sc-hdr i{color:var(--red)}
-.helpline-body{text-align:center;padding:10px 6px}
-.hl-sub{font-size:11.5px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.7px;font-weight:600}
-.hl-num{font-family:'Libre Baskerville',serif;font-size:70px;font-weight:700;color:var(--red);line-height:1;display:inline-block;animation:pulseRed 2.5s infinite}
-.hl-avail{font-size:12px;color:var(--muted);margin-top:6px}
-.call-btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;padding:10px 26px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;border:none;margin-top:14px;transition:background .2s,transform .2s;font-family:'DM Sans',sans-serif}
-.call-btn i{font-size:12px}
-.call-btn:hover{background:#8f1616;transform:scale(1.04)}
+.helpline-body { text-align: center; padding: 8px 0 4px; }
+.hl-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 4px;
+}
+.hl-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 60px;
+  font-weight: 800;
+  color: var(--red);
+  line-height: 1;
+}
+.hl-avail { font-size: 11px; color: var(--ink-faint); margin-top: 4px; margin-bottom: 12px; }
+.call-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--red);
+  color: #fff;
+  padding: 10px 28px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: background 0.2s;
+}
+.call-btn i { font-size: 12px; }
+.call-btn:hover { background: #8f1616; }
 
 /* ── REPORTS ROW ── */
-.rpts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:12px}
-.rpt{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh1);overflow:hidden;animation:fadeUp .5s ease both}
-.rpt:nth-child(1){animation-delay:.08s}
-.rpt:nth-child(2){animation-delay:.16s}
-.rpt:nth-child(3){animation-delay:.24s}
-.rpt-hdr{padding:13px 17px;display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:700;color:var(--navy);border-bottom:1px solid var(--border);background:linear-gradient(90deg,var(--bg),var(--white))}
-.rpt-hdr i{font-size:14px;color:var(--blue)}
-.rpt-body{padding:18px}
+.rpts-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 24px;
+  margin-bottom: 12px;
+}
+.rpt {
+  border: 1px solid var(--rule);
+  background: var(--white);
+}
+.rpt-hdr {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.rpt-hdr i { font-size: 11px; color: var(--navy); }
+.rpt-body { padding: 18px; }
 
 /* Bar chart */
-.chart-label-row{font-size:11px;color:var(--muted);margin-bottom:14px}
-.bars{display:flex;align-items:flex-end;gap:7px;height:120px;margin-bottom:10px}
-.bc{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
-.bar{width:100%;border-radius:3px 3px 0 0;transform-origin:bottom;animation:barGrow .9s ease both}
-.bar:nth-child(1){animation-delay:.4s}
-.bv{font-size:10px;font-weight:700;color:var(--navy);margin-bottom:3px}
-.bl{font-size:9.5px;color:var(--muted);white-space:nowrap}
-.bar-acc{background:linear-gradient(180deg,#2572c8,#1a3e8a)}
-.bar-fat{background:linear-gradient(180deg,#c0392b,#7b1010)}
-.chart-legend{display:flex;gap:16px;font-size:11.5px;color:var(--muted);margin-top:8px}
-.cl-dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:middle}
-.dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--navy);color:#fff;padding:9px;border-radius:3px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;margin-top:14px;width:100%;font-family:'DM Sans',sans-serif;transition:background .2s}
-.dl-btn i{font-size:12px}
-.dl-btn:hover{background:var(--blue)}
+.chart-label-row {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-faint);
+  margin-bottom: 16px;
+  letter-spacing: 0.3px;
+}
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 110px;
+  margin-bottom: 10px;
+}
+.bc { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar {
+  width: 100%;
+  border-radius: 1px 1px 0 0;
+  transform-origin: bottom;
+  transform: scaleY(0);
+  transition: transform 0.85s cubic-bezier(.22,1,.36,1);
+}
+.bv {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--ink-mid);
+  margin-bottom: 2px;
+}
+.bl {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--ink-faint);
+}
+.bar-acc { background: var(--navy); }
+.bar-fat { background: var(--red); }
+.chart-legend { display: flex; gap: 16px; font-size: 11px; color: var(--ink-faint); margin-top: 8px; }
+.cl-dot { width: 8px; height: 8px; display: inline-block; margin-right: 4px; vertical-align: middle; }
+.dl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--navy);
+  color: #fff;
+  padding: 9px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  margin-top: 16px;
+  width: 100%;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: background 0.2s;
+  letter-spacing: 0.3px;
+}
+.dl-btn i { font-size: 11px; }
+.dl-btn:hover { background: var(--blue-dim); }
 
 /* Publication */
-.pub-img-wrap{border-radius:4px;overflow:hidden;height:152px;margin-bottom:14px;position:relative}
-.pub-img-wrap img{width:100%;height:100%;object-fit:cover}
-.pub-img-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(12,28,56,.82) 0%,rgba(12,28,56,.2) 60%);display:flex;flex-direction:column;justify-content:flex-end;padding:14px}
-.pub-vol{font-size:10px;color:var(--gold-bright);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
-.pub-title{font-family:'Libre Baskerville',serif;font-size:18px;font-weight:700;color:#fff;line-height:1.2}
-.pub-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:3px}
-.pub-desc{font-size:12.5px;color:var(--muted);margin-bottom:13px;line-height:1.6}
+.pub-img-wrap {
+  height: 148px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+  background: var(--navy);
+}
+.pub-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+.pub-img-overlay {
+  position: absolute;
+  inset: 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.pub-vol {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  color: var(--gold);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.pub-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+}
+.pub-sub { font-size: 10.5px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+.pub-desc { font-size: 12px; color: var(--ink-faint); margin-bottom: 12px; line-height: 1.65; }
 
-/* App card */
-.app-img-wrap{border-radius:4px;overflow:hidden;height:152px;margin-bottom:14px;position:relative}
-.app-img-wrap img{width:100%;height:100%;object-fit:cover}
-.app-img-overlay{position:absolute;inset:0;background:rgba(12,28,56,.55);display:flex;align-items:center;justify-content:center}
-.app-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:10px 18px;backdrop-filter:blur(8px);text-align:center}
-.app-badge-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:.5px}
-.app-badge-sub{font-size:10.5px;color:rgba(255,255,255,.7);margin-top:2px}
-.app-stores{display:flex;flex-direction:column;gap:8px}
-.store-btn{display:flex;align-items:center;gap:9px;background:var(--navy);color:#fff;padding:9px 14px;border-radius:4px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;width:100%;font-family:'DM Sans',sans-serif;transition:background .2s}
-.store-btn i{font-size:16px;width:20px;text-align:center}
-.store-btn:hover{background:var(--blue)}
-.store-btn .sb-sub{font-size:10px;color:rgba(255,255,255,.6);display:block;font-weight:400;margin-top:1px}
+/* App */
+.app-img-wrap {
+  height: 148px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+  background: var(--navy);
+}
+.app-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.45; }
+.app-img-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.app-badge {
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 10px 18px;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+.app-badge-title { font-size: 13px; font-weight: 600; color: #fff; }
+.app-badge-sub { font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+.app-stores { display: flex; flex-direction: column; gap: 8px; }
+.store-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  color: var(--navy);
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: background 0.15s;
+}
+.store-btn i { font-size: 16px; width: 18px; text-align: center; color: var(--navy); }
+.store-btn:hover { background: var(--paper2); }
+.sb-sub { font-size: 9.5px; color: var(--ink-faint); display: block; font-weight: 400; margin-top: 1px; }
 
 /* ── FOOTER ── */
-footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba(255,255,255,.75);margin-top:8px}
-.ft{max-width:1240px;margin:0 auto;padding:46px 28px 36px;display:grid;grid-template-columns:1.7fr 1fr 1fr 1.5fr;gap:40px}
-.ft-brand{display:flex;flex-direction:column}
-.ft-logo{width:52px;height:52px;border-radius:50%;border:2px solid var(--gold);overflow:hidden;margin-bottom:14px}
-.ft-logo img{width:100%;height:100%;object-fit:cover}
-.ft-logo-fb{width:52px;height:52px;border-radius:50%;border:2px solid var(--gold);background:var(--navy-mid);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
-.ft-logo-fb i{font-size:20px;color:var(--gold-bright)}
-.ft-brand-name{font-family:'Noto Sans Devanagari',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;line-height:1.3}
-.ft-brand-en{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.5px;margin-bottom:14px}
-.ft-divider{width:36px;height:2px;background:var(--gold);border-radius:2px;margin-bottom:14px}
-.ft-brand p{font-size:12.5px;line-height:1.85;color:rgba(255,255,255,.6)}
-.ft-col h4{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:var(--gold-bright);margin-bottom:15px}
-.ft-list{list-style:none}
-.ft-list li{padding:7px 0;font-size:12.5px;border-bottom:1px solid rgba(255,255,255,.07);cursor:pointer;transition:color .2s,padding-left .2s;display:flex;align-items:center;gap:8px}
-.ft-list li i{font-size:11px;color:var(--gold);width:12px}
-.ft-list li:hover{color:#fff;padding-left:5px}
-.ft-list li:last-child{border-bottom:none}
-.ft-contact .ci{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:12.5px}
-.ci-icon{width:28px;height:28px;background:rgba(255,255,255,.08);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.ci-icon i{font-size:12px;color:var(--gold-bright)}
-.ci-text{line-height:1.65;color:rgba(255,255,255,.72)}
-.ci-text strong{color:#fff;display:block;font-size:13px}
-.ft-bottom{border-top:1px solid rgba(255,255,255,.09);padding:14px 28px;display:flex;justify-content:space-between;align-items:center;max-width:1240px;margin:0 auto;font-size:11.5px;color:rgba(255,255,255,.38)}
-.ft-bottom-r{display:flex;align-items:center;gap:8px}
-.ft-bottom-r i{font-size:11px;color:rgba(255,255,255,.3)}
-.visit-num{background:rgba(255,255,255,.09);padding:2px 10px;border-radius:20px;font-weight:700;color:var(--gold-bright);letter-spacing:.8px}
+footer {
+  background: var(--navy);
+  color: rgba(255,255,255,0.65);
+  margin-top: 8px;
+  border-top: 3px solid var(--gold);
+}
+.ft {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px 36px;
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1.4fr;
+  gap: 48px;
+}
+.ft-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.ft-logo-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(196,154,0,0.5);
+  background: rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ft-logo-circle i { font-size: 16px; color: var(--gold); }
+.ft-brand-name {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+.ft-brand-en { font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; }
+.ft-divider { width: 28px; height: 1px; background: var(--gold); margin-bottom: 14px; opacity: 0.6; }
+.ft-brand p { font-size: 12.5px; line-height: 1.85; color: rgba(255,255,255,0.5); }
+.ft-col h4 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+.ft-list { list-style: none; }
+.ft-list li {
+  padding: 7px 0;
+  font-size: 12.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  cursor: pointer;
+  transition: color 0.15s, padding-left 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.6);
+}
+.ft-list li i { font-size: 9px; color: rgba(255,255,255,0.25); width: 10px; }
+.ft-list li:hover { color: #fff; padding-left: 4px; }
+.ft-list li:last-child { border-bottom: none; }
+.ft-contact .ci { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; font-size: 12px; }
+.ci-icon {
+  width: 26px;
+  height: 26px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.ci-icon i { font-size: 11px; color: var(--gold); }
+.ci-text { line-height: 1.7; color: rgba(255,255,255,0.6); }
+.ci-text strong { color: #fff; display: block; font-size: 12.5px; font-weight: 500; }
+.ft-bottom {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  color: rgba(255,255,255,0.3);
+}
+.visit-num { color: var(--gold); font-weight: 500; }
 </style>
 </head>
 <body>
 
-<!-- UTILITY BAR -->
-<div class="util">
-  <div class="util-inner">
-    <div class="util-left">
-      <i class="fa-regular fa-calendar-days"></i>
-      <span>२०८२ माघ १० गते, आइतबार &nbsp;|&nbsp; Sunday, February 22, 2026</span>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-date">
+      <strong>२०८२ माघ १०</strong>, आइतबार &nbsp;·&nbsp; Sunday, 22 February 2026
     </div>
     <div class="lang-wrap">
       <button class="lang-btn active">नेपाली</button>
-      <button class="lang-btn" onclick="this.classList.add('active');document.querySelector('.lang-btn.active:not(this)').classList.remove('active')">EN</button>
+      <button class="lang-btn">EN</button>
     </div>
   </div>
 </div>
@@ -312,17 +949,19 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
 <!-- HEADER -->
 <header>
   <div class="hdr">
-    <div class="logo-fallback">
-      <i class="fa-solid fa-shield-halved"></i>
-      <span>Nepal Police</span>
+    <div class="logo-wrap">
+      <div class="logo-circle">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div class="hdr-texts">
+        <h1>काठमाण्डौ उपत्यका ट्राफिक प्रहरी कार्यालय</h1>
+        <div class="en">Kathmandu Valley Traffic Police Office</div>
+        <div class="loc"><i class="fa-solid fa-location-dot"></i> रामशाहपथ, काठमाडौं &nbsp;·&nbsp; Ramshahpath, Kathmandu</div>
+      </div>
     </div>
-    <div class="hdr-title">
-      <h1>काठमाण्डौ उपत्यका ट्राफिक प्रहरी कार्यालय</h1>
-      <div class="en">Kathmandu Valley Traffic Police Office</div>
-      <div class="loc"><i class="fa-solid fa-location-dot"></i> रामशाहपथ, काठमाडौं, नेपाल &nbsp;·&nbsp; Ramshahpath, Kathmandu</div>
-    </div>
+    <div></div>
     <div class="emrg">
-      <div class="emrg-lbl"><i class="fa-solid fa-triangle-exclamation"></i> Emergency Contacts</div>
+      <div class="emrg-lbl">Emergency Contacts</div>
       <div class="emrg-row"><i class="fa-solid fa-phone"></i> Traffic Control: <span class="emrg-num">&nbsp;103</span></div>
       <div class="emrg-row"><i class="fa-solid fa-phone-volume"></i> +977-01-5319641</div>
       <div class="emrg-row"><i class="fa-regular fa-envelope"></i> vtpo@nepalpolice.gov.np</div>
@@ -333,69 +972,64 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="index.html" class="nav-link active"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="news.html" class="nav-link"><i class="fa-regular fa-newspaper"></i> News</a>
-    <a href="upload.html" class="nav-link"><i class="fa-solid fa-video"></i> Upload Videos</a>
-    <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-bar"></i> Reports</a>
-    <a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
-    <a href="profile.html" class="nav-link"><i class="fa-regular fa-circle-user"></i> My Profile</a>
+    <a href="{{ url_for('index') }}" class="nav-link active"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="{{ url_for('news') }}" class="nav-link"><i class="fa-regular fa-newspaper"></i> News</a>
+    <a href="{{ url_for('upload_video') }}" class="nav-link"><i class="fa-solid fa-video"></i> Upload Videos</a>
+    <a href="{{ url_for('reports') }}" class="nav-link"><i class="fa-solid fa-chart-bar"></i> Reports</a>
+    <a href="{{ url_for('settings') }}" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
+    <a href="{{ url_for('profile') }}" class="nav-link"><i class="fa-regular fa-circle-user"></i> My Profile</a>
   </div>
 </nav>
 
 <!-- HERO CAROUSEL -->
 <div class="hero">
-  <!-- Slide 1 -->
   <div class="slide active">
-    <img class="slide-img" src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1400&q=80" alt="Traffic">
-    <div class="slide-overlay"></div>
+    <img class="slide-img" src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1400&q=80" alt="">
+    <div class="slide-grad"></div>
     <div class="slide-content">
-      <div class="slide-tag"><i class="fa-solid fa-bullhorn"></i> Road Safety Initiative</div>
+      <div class="slide-eyebrow">Road Safety Initiative</div>
       <div class="slide-h">Road Accident Reduction Awareness Program 2082</div>
-      <div class="slide-p">Join our valley-wide initiative to reduce road accidents. Over 50,000 citizens trained this quarter in traffic rules and safe driving practices across the Kathmandu Valley.</div>
+      <div class="slide-p">Join our valley-wide initiative to reduce road accidents. Over 50,000 citizens trained this quarter in traffic rules and safe driving practices.</div>
       <button class="slide-btn">Learn More <i class="fa-solid fa-arrow-right"></i></button>
     </div>
   </div>
-  <!-- Slide 2 -->
   <div class="slide">
-    <img class="slide-img" src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1400&q=80" alt="Highway">
-    <div class="slide-overlay"></div>
+    <img class="slide-img" src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1400&q=80" alt="">
+    <div class="slide-grad"></div>
     <div class="slide-content">
-      <div class="slide-tag"><i class="fa-solid fa-traffic-light"></i> Traffic Operations</div>
+      <div class="slide-eyebrow">Traffic Operations</div>
       <div class="slide-h">Live Traffic Monitoring Across All Valley Junctions</div>
-      <div class="slide-p">Real-time surveillance across 120+ junctions enables faster incident response and keeps commuters informed of current road conditions.</div>
+      <div class="slide-p">Real-time surveillance across 120+ junctions enables faster incident response and keeps commuters informed of current conditions.</div>
       <button class="slide-btn">View Live Map <i class="fa-solid fa-arrow-right"></i></button>
     </div>
   </div>
-  <!-- Slide 3 -->
   <div class="slide">
-    <img class="slide-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=80" alt="Road">
-    <div class="slide-overlay"></div>
+    <img class="slide-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=80" alt="">
+    <div class="slide-grad"></div>
     <div class="slide-content">
-      <div class="slide-tag"><i class="fa-regular fa-file-lines"></i> Public Notice</div>
+      <div class="slide-eyebrow">Public Notice</div>
       <div class="slide-h">New Fines & Penalties for Traffic Violations Effective 2082</div>
       <div class="slide-p">Updated regulations now in effect. Know your rights and responsibilities under Nepal's latest traffic enforcement framework.</div>
       <button class="slide-btn">Read Notice <i class="fa-solid fa-arrow-right"></i></button>
     </div>
   </div>
-  <!-- Slide 4 -->
   <div class="slide">
-    <img class="slide-img" src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1400&q=80" alt="Vehicle">
-    <div class="slide-overlay"></div>
+    <img class="slide-img" src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1400&q=80" alt="">
+    <div class="slide-grad"></div>
     <div class="slide-content">
-      <div class="slide-tag"><i class="fa-solid fa-magnifying-glass"></i> Lost & Found</div>
+      <div class="slide-eyebrow">Lost & Found</div>
       <div class="slide-h">Report Lost Vehicles and Documents Online – 24/7</div>
-      <div class="slide-p">Our digital portal streamlines lost vehicle and document reporting. File from anywhere, track status in real time, no office visit required.</div>
+      <div class="slide-p">Our digital portal streamlines lost vehicle and document reporting. File from anywhere, track status in real time.</div>
       <button class="slide-btn">File Report <i class="fa-solid fa-arrow-right"></i></button>
     </div>
   </div>
-  <!-- Slide 5 -->
   <div class="slide">
-    <img class="slide-img" src="https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=1400&q=80" alt="App">
-    <div class="slide-overlay"></div>
+    <img class="slide-img" src="https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=1400&q=80" alt="">
+    <div class="slide-grad"></div>
     <div class="slide-content">
-      <div class="slide-tag"><i class="fa-solid fa-mobile-screen"></i> Digital Services</div>
+      <div class="slide-eyebrow">Digital Services</div>
       <div class="slide-h">Download the Nepal Traffic Police Mobile App</div>
-      <div class="slide-p">Check fines, report violations, receive live traffic alerts, and contact the helpline — all from the palm of your hand.</div>
+      <div class="slide-p">Check fines, report violations, receive live traffic alerts, and contact the helpline — all from your phone.</div>
       <button class="slide-btn">Download Now <i class="fa-solid fa-arrow-right"></i></button>
     </div>
   </div>
@@ -413,7 +1047,7 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
 
 <!-- TICKER -->
 <div class="ticker">
-  <div class="ticker-label"><i class="fa-solid fa-circle" style="color:#e74c3c;font-size:8px"></i> Live Updates</div>
+  <div class="ticker-label"><i class="fa-solid fa-circle"></i> Live</div>
   <div class="ticker-track">
     <div class="ticker-scroll">
       <span class="ti">Pulchowk–Lagankhel road under maintenance — expect delays on southbound lanes</span>
@@ -434,33 +1068,28 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
 <div class="page">
 
   <!-- SERVICES -->
-  <div class="sh" style="margin-bottom:18px">
-    <div class="sh-icon"><i class="fa-solid fa-bolt"></i></div>
+  <div class="sh" style="margin-bottom: 16px;">
     <div class="sh-title">Quick Services</div>
-    <div class="sh-line"></div>
+    <div class="sh-rule"></div>
   </div>
-  <div class="svc-grid">
+  <div class="svc-grid" style="margin-bottom:40px">
     <div class="svc-card">
-      <div class="svc-img-wrap">
-        <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0729?w=200&q=80" alt="Lost Vehicle">
-      </div>
+      <div class="svc-icon-ring"><i class="fa-solid fa-car"></i></div>
       <div class="svc-name">Lost Vehicle Application</div>
       <div class="svc-desc">Report and track stolen or missing vehicles through our secure online portal</div>
     </div>
     <div class="svc-card">
-      <div class="svc-icon-wrap si-g"><i class="fa-regular fa-folder-open"></i></div>
+      <div class="svc-icon-ring"><i class="fa-regular fa-folder-open"></i></div>
       <div class="svc-name">Lost Document Application</div>
       <div class="svc-desc">File a report for lost driving license, blue book, or citizenship documents</div>
     </div>
     <div class="svc-card">
-      <div class="svc-img-wrap">
-        <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=200&q=80" alt="Traffic Fine">
-      </div>
+      <div class="svc-icon-ring"><i class="fa-solid fa-money-bill-wave"></i></div>
       <div class="svc-name">Traffic Violations & Fines</div>
       <div class="svc-desc">View and settle outstanding fines; check violation records by number plate</div>
     </div>
     <div class="svc-card">
-      <div class="svc-icon-wrap si-t"><i class="fa-solid fa-person-chalkboard"></i></div>
+      <div class="svc-icon-ring"><i class="fa-solid fa-person-chalkboard"></i></div>
       <div class="svc-name">Awareness Class</div>
       <div class="svc-desc">Register for free traffic safety and road rule training programs near you</div>
     </div>
@@ -469,58 +1098,54 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
   <!-- NEWS + SIDEBAR -->
   <div class="main-grid">
     <div>
-      <div class="sh" style="margin-bottom:18px">
-        <div class="sh-icon"><i class="fa-regular fa-newspaper"></i></div>
+      <div class="sh" style="margin-bottom: 0;">
         <div class="sh-title">Latest News & Updates</div>
-        <span class="sh-badge">Live</span>
-        <div class="sh-line"></div>
+        <div class="sh-rule"></div>
+        <div class="sh-tag">Live</div>
       </div>
       <div class="news-stack">
 
         <div class="nc">
-          <div class="nc-bar"></div>
           <div class="nc-thumb">
             <img src="https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?w=260&q=80" alt="Awareness">
           </div>
           <div class="nc-body">
             <div class="nc-meta">
-              <span class="nc-date"><i class="fa-regular fa-calendar"></i> 2082-08-19</span>
+              <span class="nc-date">2082-08-19</span>
               <span class="nc-cat">Program</span>
             </div>
-            <div class="nc-title">"Road Accident Reduction Awareness Program Successfully Completed"</div>
-            <div class="nc-desc">The Kathmandu Valley Traffic Police concluded its month-long campaign, reaching over 12,000 citizens across 14 wards. Participants received training on helmet use, safe overtaking, and pedestrian rights.</div>
+            <div class="nc-title">Road Accident Reduction Awareness Program Successfully Completed</div>
+            <div class="nc-desc">The Kathmandu Valley Traffic Police concluded its month-long campaign, reaching over 12,000 citizens across 14 wards with training on helmet use, safe overtaking, and pedestrian rights.</div>
             <a class="rm">Read More <i class="fa-solid fa-arrow-right"></i></a>
           </div>
         </div>
 
         <div class="nc">
-          <div class="nc-bar"></div>
           <div class="nc-thumb">
             <img src="https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=260&q=80" alt="Traffic">
           </div>
           <div class="nc-body">
             <div class="nc-meta">
-              <span class="nc-date"><i class="fa-regular fa-calendar"></i> 2082-05-23</span>
+              <span class="nc-date">2082-05-23</span>
               <span class="nc-cat">Traffic Alert</span>
             </div>
-            <div class="nc-title">Traffic Update — Morning 12:30: Heavy Congestion at Ring Road</div>
-            <div class="nc-desc">Due to ongoing road works at Kalanki junction, significant delays are expected from Kalanki to Koteshwor. Commuters are advised to use alternate routes via Balaju or Maharajgunj.</div>
+            <div class="nc-title">Traffic Update — Heavy Congestion at Ring Road, Morning 12:30</div>
+            <div class="nc-desc">Ongoing road works at Kalanki junction causing significant delays from Kalanki to Koteshwor. Commuters advised to use alternate routes via Balaju or Maharajgunj.</div>
             <a class="rm">Read More <i class="fa-solid fa-arrow-right"></i></a>
           </div>
         </div>
 
         <div class="nc">
-          <div class="nc-bar"></div>
           <div class="nc-thumb">
             <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=260&q=80" alt="Meeting">
           </div>
           <div class="nc-body">
             <div class="nc-meta">
-              <span class="nc-date"><i class="fa-regular fa-calendar"></i> 2082-05-04</span>
+              <span class="nc-date">2082-05-04</span>
               <span class="nc-cat">Event</span>
             </div>
             <div class="nc-title">Discussion and Interaction Program with Retired Senior Police Officials</div>
-            <div class="nc-desc">A special interaction was organized at the Traffic Police headquarters, bringing together retired senior officers to discuss modernizing enforcement and improving pedestrian safety in high-density zones.</div>
+            <div class="nc-desc">A special interaction at headquarters brought together retired senior officers to discuss modernizing enforcement and improving pedestrian safety in high-density zones.</div>
             <a class="rm">Read More <i class="fa-solid fa-arrow-right"></i></a>
           </div>
         </div>
@@ -535,58 +1160,59 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
     <div class="sidebar">
 
       <!-- Notices -->
-      <div class="sc sc-notices">
-        <div class="sc-hdr"><i class="fa-solid fa-star"></i> Important Notices</div>
+      <div class="sc">
+        <div class="sc-hdr"><i class="fa-solid fa-thumbtack"></i> Important Notices</div>
         <div class="sc-body">
           <div class="ni">
-            <div class="ni-icon" style="background:#fff3cd"><i class="fa-regular fa-file-lines" style="color:var(--gold)"></i></div>
+            <div class="ni-bullet"></div>
             <div>
               <div class="ni-t">Updated Traffic Rules 2082</div>
-              <div class="ni-d"><i class="fa-regular fa-clock"></i> 2082-08-15 &nbsp;·&nbsp; Circular No. 41</div>
+              <div class="ni-d">2082-08-15 &nbsp;·&nbsp; Circular No. 41</div>
             </div>
           </div>
           <div class="ni">
-            <div class="ni-icon" style="background:#fce4ec"><i class="fa-solid fa-scale-balanced" style="color:#c0392b"></i></div>
+            <div class="ni-bullet"></div>
             <div>
               <div class="ni-t">Revised Fines & Penalties Schedule</div>
-              <div class="ni-d"><i class="fa-regular fa-clock"></i> 2082-07-01 &nbsp;·&nbsp; Effective Immediately</div>
+              <div class="ni-d">2082-07-01 &nbsp;·&nbsp; Effective Immediately</div>
             </div>
           </div>
           <div class="ni">
-            <div class="ni-icon" style="background:#e8f5e9"><i class="fa-regular fa-folder" style="color:#2e7d32"></i></div>
+            <div class="ni-bullet"></div>
             <div>
               <div class="ni-t">Required Documents for Vehicle Registration</div>
-              <div class="ni-d"><i class="fa-regular fa-clock"></i> 2082-06-20 &nbsp;·&nbsp; Guidelines</div>
+              <div class="ni-d">2082-06-20 &nbsp;·&nbsp; Guidelines</div>
             </div>
           </div>
           <div class="ni">
-            <div class="ni-icon" style="background:#e3f2fd"><i class="fa-solid fa-road-barrier" style="color:#1565c0"></i></div>
+            <div class="ni-bullet"></div>
             <div>
               <div class="ni-t">Road Closure Notice — Pulchowk Sector</div>
-              <div class="ni-d"><i class="fa-regular fa-clock"></i> 2082-08-18 &nbsp;·&nbsp; Until Further Notice</div>
+              <div class="ni-d">2082-08-18 &nbsp;·&nbsp; Until Further Notice</div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Officer -->
-      <div class="sc sc-officer">
+      <div class="sc">
         <div class="sc-hdr"><i class="fa-solid fa-user-shield"></i> Office In-Charge</div>
         <div class="sc-body">
           <div class="officer-wrap">
-            <div class="officer-photo" style="position:relative">
+            <div class="officer-photo">
               <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=220&q=80" alt="SSP Officer">
-              <div class="officer-badge"><i class="fa-solid fa-star"></i></div>
             </div>
-            <div class="of-name">SSP Raj Kumar Shrestha</div>
-            <div class="of-rank">Senior Superintendent of Police</div>
-            <div class="of-dept">Kathmandu Valley Traffic Police Office</div>
+            <div>
+              <div class="of-name">SSP Raj Kumar Shrestha</div>
+              <div class="of-rank">Senior Superintendent of Police</div>
+              <div class="of-dept">Kathmandu Valley Traffic Police Office</div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Helpline -->
-      <div class="sc sc-helpline">
+      <div class="sc">
         <div class="sc-hdr"><i class="fa-solid fa-phone-volume"></i> Traffic Helpline</div>
         <div class="sc-body helpline-body">
           <div class="hl-sub">24 / 7 Emergency Line</div>
@@ -600,10 +1226,9 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
   </div>
 
   <!-- REPORTS ROW -->
-  <div class="sh" style="margin-bottom:18px">
-    <div class="sh-icon"><i class="fa-solid fa-chart-column"></i></div>
+  <div class="sh" style="margin-bottom: 16px;">
     <div class="sh-title">Reports & Resources</div>
-    <div class="sh-line"></div>
+    <div class="sh-rule"></div>
   </div>
   <div class="rpts-grid">
 
@@ -616,13 +1241,13 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
           <div class="bc"><div class="bv">47</div><div class="bar bar-acc" style="height:88px"></div><div class="bl">Bai</div></div>
           <div class="bc"><div class="bv">12</div><div class="bar bar-fat" style="height:26px"></div><div class="bl"></div></div>
           <div class="bc"><div class="bv">38</div><div class="bar bar-acc" style="height:70px"></div><div class="bl">Jes</div></div>
-          <div class="bc"><div class="bv">9</div><div class="bar bar-fat" style="height:19px"></div><div class="bl"></div></div>
+          <div class="bc"><div class="bv">9</div><div class="bar bar-fat"  style="height:19px"></div><div class="bl"></div></div>
           <div class="bc"><div class="bv">54</div><div class="bar bar-acc" style="height:103px"></div><div class="bl">Ash</div></div>
-          <div class="bc"><div class="bv">7</div><div class="bar bar-fat" style="height:15px"></div><div class="bl"></div></div>
+          <div class="bc"><div class="bv">7</div><div class="bar bar-fat"  style="height:15px"></div><div class="bl"></div></div>
         </div>
         <div class="chart-legend">
-          <span><span class="cl-dot" style="background:#2572c8"></span>Accidents</span>
-          <span><span class="cl-dot" style="background:#c0392b"></span>Fatalities</span>
+          <span><span class="cl-dot" style="background:var(--navy)"></span>Accidents</span>
+          <span><span class="cl-dot" style="background:var(--red)"></span>Fatalities</span>
         </div>
         <button class="dl-btn"><i class="fa-solid fa-download"></i> Download Full Report (PDF)</button>
       </div>
@@ -679,9 +1304,13 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
 <footer>
   <div class="ft">
     <div class="ft-brand">
-      <div class="ft-logo-fb"><i class="fa-solid fa-shield-halved"></i></div>
-      <div class="ft-brand-name">काठमाण्डौ उपत्यका ट्राफिक प्रहरी कार्यालय</div>
-      <div class="ft-brand-en">Kathmandu Valley Traffic Police Office</div>
+      <div class="ft-logo-row">
+        <div class="ft-logo-circle"><i class="fa-solid fa-shield-halved"></i></div>
+        <div>
+          <div class="ft-brand-name">काठमाण्डौ उपत्यका ट्राफिक प्रहरी कार्यालय</div>
+          <div class="ft-brand-en">Kathmandu Valley Traffic Police Office</div>
+        </div>
+      </div>
       <div class="ft-divider"></div>
       <p>We are committed to making the roads of Kathmandu Valley safe, organized, and accessible for every citizen. Through enforcement, education, and community engagement, we strive for zero road fatalities.</p>
     </div>
@@ -727,12 +1356,12 @@ footer{background:linear-gradient(180deg,var(--navy-mid),var(--navy));color:rgba
 
   <div class="ft-bottom">
     <div>&copy; 2082 B.S. &nbsp;·&nbsp; Nepal Police — Kathmandu Valley Traffic Police Office. All Rights Reserved.</div>
-    <div class="ft-bottom-r"><i class="fa-regular fa-eye"></i> Page Visits: <span class="visit-num">1,47,382</span></div>
+    <div>Page Visits: <span class="visit-num">1,47,382</span></div>
   </div>
 </footer>
 
 <script>
-// ── Hero Carousel ──
+// Hero Carousel
 const slides = document.querySelectorAll('.slide');
 const dots   = document.querySelectorAll('.hdot');
 let cur = 0, timer;
@@ -751,21 +1380,14 @@ document.getElementById('heroNext').onclick = () => { clearInterval(timer); goTo
 dots.forEach((d, i) => d.addEventListener('click', () => { clearInterval(timer); goTo(i); start(); }));
 start();
 
-// ── Bar animation on scroll / load ──
+// Bar chart animation on scroll
 const bars = document.querySelectorAll('.bar');
-bars.forEach(b => {
-  b.style.transform = 'scaleY(0)';
-  b.style.transformOrigin = 'bottom';
-  b.style.transition = 'transform 0.85s cubic-bezier(.22,1,.36,1)';
-});
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
-      setTimeout(() => {
-        bars.forEach((b, i) => {
-          setTimeout(() => b.style.transform = 'scaleY(1)', i * 80);
-        });
-      }, 100);
+      bars.forEach((b, i) => {
+        setTimeout(() => b.style.transform = 'scaleY(1)', i * 80);
+      });
       obs.disconnect();
     }
   });
@@ -773,7 +1395,7 @@ const obs = new IntersectionObserver(entries => {
 const chartEl = document.querySelector('.bars');
 if (chartEl) obs.observe(chartEl);
 
-// ── Language button ──
+// Language toggle
 document.querySelectorAll('.lang-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
@@ -783,3 +1405,4 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 </script>
 </body>
 </html>
+{% endblock %}

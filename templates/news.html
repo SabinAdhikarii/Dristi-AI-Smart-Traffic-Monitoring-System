@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -204,7 +207,7 @@ nav{background:linear-gradient(90deg,var(--navy-mid),var(--navy));border-bottom:
       flex-shrink: 0;
     }
 
-    .brand-text {}
+    /* .brand-text {} */
 
     .brand-text .ministry {
       font-size: 10px;
@@ -566,7 +569,10 @@ nav{background:linear-gradient(90deg,var(--navy-mid),var(--navy));border-bottom:
 
     .news-list-item:hover .news-thumb { filter: brightness(1); }
 
-    .news-list-body {}
+    .news-list-body {
+        display: flex;
+        flex-direction: column;
+    }
 
     .news-list-body .news-meta { margin-bottom: 6px; }
 
@@ -986,12 +992,12 @@ nav{background:linear-gradient(90deg,var(--navy-mid),var(--navy));border-bottom:
 <!-- NAV -->
 <nav class="site-nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="news.html" class="nav-link active"><i class="fa-regular fa-newspaper"></i> News</a>
-    <a href="upload.html" class="nav-link"><i class="fa-solid fa-video"></i> Upload Videos</a>
-    <a href="reports.html" class="nav-link"><i class="fa-solid fa-chart-bar"></i> Reports</a>
-    <a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
-    <a href="profile.html" class="nav-link"><i class="fa-regular fa-circle-user"></i> My Profile</a>
+    <a href="{{ url_for('index') }}" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="{{ url_for('news') }}" class="nav-link active"><i class="fa-regular fa-newspaper"></i> News</a>
+    <a href="{{ url_for('upload_video') }}" class="nav-link"><i class="fa-solid fa-video"></i> Upload Videos</a>
+    <a href="{{ url_for('reports') }}" class="nav-link"><i class="fa-solid fa-chart-bar"></i> Reports</a>
+    <a href="{{ url_for('settings') }}" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
+    <a href="{{ url_for('profile') }}" class="nav-link"><i class="fa-regular fa-circle-user"></i> My Profile</a>
   </div>
 </nav>
 
@@ -1314,3 +1320,4 @@ nav{background:linear-gradient(90deg,var(--navy-mid),var(--navy));border-bottom:
 
 </body>
 </html>
+{% endblock %}
