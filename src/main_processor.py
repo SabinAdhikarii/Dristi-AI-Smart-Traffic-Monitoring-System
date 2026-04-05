@@ -435,9 +435,13 @@ class TrafficMonitoringSystem:
                                                    plate_image_path=plate_image_path)
                                     print(f"  [DB] Red light saved: {vehicle_type} | Plate: {plate_text or 'Not detected'}")
 
+                        # FIX: was broken tuple unpacking — now proper conditionals
                         is_speeding_vehicle    = (speed is not None and speed > self.speed_limit)
                         is_red_light_violation = (track_id in recorded_red_light)
-                        color, thickness = (0, 0, 255), 3 if (is_speeding_vehicle or is_red_light_violation) else (0, 255, 0), 2
+                        is_violation = is_speeding_vehicle or is_red_light_violation
+                        color     = (0, 0, 255) if is_violation else (0, 255, 0)
+                        thickness = 3 if is_violation else 2
+
                         cv2.rectangle(annotated, (x1, y1), (x2, y2), color, thickness, lineType=cv2.LINE_AA)
                         label = f"{vehicle_type} {conf:.2f} | {speed:.1f} km/h" if speed is not None else f"{vehicle_type} {conf:.2f}"
 
