@@ -375,6 +375,29 @@ def admin_api_stats():
     return jsonify(get_admin_stats())
 
 
+@app.route('/admin/api/recent-violations')
+@admin_required
+def admin_api_recent_violations():
+    """Return the 20 most recent individual violations for the dashboard table."""
+    violations = get_all_violations(limit=20)
+    rows = []
+    for v in violations:
+        rows.append({
+            'id':             v.get('id'),
+            'violation_type': v.get('violation_type', ''),
+            'vehicle_type':   v.get('vehicle_type', '—'),
+            'license_plate':  v.get('license_plate') or '—',
+            'session_id':     v.get('session_id', ''),
+            'video_filename': v.get('video_filename', '—'),
+            'confidence':     round(float(v.get('confidence') or 0), 2),
+            'created_at':     str(v.get('created_at', ''))[:16],
+            'fine_id':        v.get('fine_id'),
+            'fine_amount':    v.get('fine_amount'),
+            'fine_status':    v.get('fine_status') or 'none',
+        })
+    return jsonify({'violations': rows})
+
+
 # ============== VIDEO UPLOAD & STREAMING ==============
 
 @app.route('/upload', methods=['GET', 'POST'])
