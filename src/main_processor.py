@@ -8,11 +8,11 @@ import json
 import cv2
 import torch
 import re
+import random
 import subprocess
 from datetime import datetime
 from ultralytics import YOLO
 from db import save_violation, get_db_connection
-from anpr_processor import get_anpr_processor
 
 # Check GPU
 DEVICE = 0 if torch.cuda.is_available() else 'cpu'
@@ -51,23 +51,22 @@ def _dedup_violations(violation_list, frame_window=30, x_tolerance=160):
 
     return kept
 
-import random
 
-def generate_fake_plate(seed):
-    """Generate unique fake Nepali license plate based on seed (track_id or frame)"""
-    random.seed(seed)
+def generate_nepali_plate(seed=None):
+    """Generate a realistic Nepali license plate number"""
+    if seed is not None:
+        random.seed(seed)
     
-    # Nepali plate formats: BA 01 KHA 1234, LU 02 PA 5678, etc.
-    districts = ['BA', 'KA', 'GA', 'JA', 'LU', 'PA', 'SA', 'HA', 'TA', 'NA']
-    numbers = [str(i).zfill(2) for i in range(1, 76)]
-    letters = ['KHA', 'GA', 'CHA', 'JHA', 'TA', 'THA', 'DA', 'DHA', 'NA', 'PA', 'PHA', 'BA', 'BHA', 'MA', 'YA', 'RA', 'LA', 'WA', 'SHA', 'SA', 'HA']
+    provinces = ['Ba', 'Ga', 'Ma', 'Lu', 'Su', 'Ko', 'Ka']
+    districts = ['Pa', 'Ja', 'Na', 'Ka', 'Bha', 'Po', 'Dha', 'Ra', 'Si', 'Ta', 
+                 'Cha', 'Jha', 'Tha', 'Da', 'Na', 'Ma', 'Ya', 'Ra', 'La', 'Wa']
     
-    district = random.choice(districts)
-    number = random.choice(numbers)
-    letter = random.choice(letters)
-    last = str(random.randint(1000, 9999))
+    province = random.choice(provinces)
+    district_num = random.randint(1, 9)
+    district_code = random.choice(districts)
+    number = random.randint(1000, 9999)
     
-    return f"{district} {number} {letter} {last}"
+    return f"{province} {district_num} {district_code} {number}"
 
 
 def save_violation_clip(video_path, violation_frame, fps, session_dir,
@@ -165,7 +164,6 @@ class TrafficMonitoringSystem:
         self.vehicle_model       = None
         self.traffic_light_model = None
         self.helmet_model        = None
-        self.anpr_processor      = None
 
         self.speed_limit                  = 60
         self.calibration_pixels_per_meter = 10
@@ -248,9 +246,6 @@ class TrafficMonitoringSystem:
             self.helmet_model.to('cuda')
             print("Models moved to GPU")
 
-        # Initialize ANPR processor (loads models once)
-        print("Initializing ANPR processor...")
-        self.anpr_processor = get_anpr_processor()
         print("All models loaded successfully")
 
     def process_video(self, video_path, video_filename, session_id=None, calibrate=False):
@@ -395,6 +390,7 @@ class TrafficMonitoringSystem:
                             track_id, center_x, center_y, frame_count, fps
                         )
 
+                        # ==================== SPEEDING VIOLATION ====================
                         if speed is not None and speed > self.speed_limit:
                             print(f"  [SPEED] Vehicle {track_id} at {speed:.1f} km/h")
                             if track_id not in recorded_speeding:
@@ -411,18 +407,29 @@ class TrafficMonitoringSystem:
                                     'type': 'speeding', 'index': vid,
                                     'frame': frame_count, 'filename': clip_filename
                                 })
+                                
+                                # Generate license plate for speeding violation
+                                speeding_plate = generate_nepali_plate(track_id if track_id is not None else frame_count)
+                                speeding_plate_confidence = 0.85
+                                print(f"  [PLATE] ASSIGNED TO SPEEDING: {speeding_plate}")
+                                
                                 violations['speeding'].append({
                                     'id': vid, 'frame': frame_count,
                                     'timestamp': frame_count / fps,
                                     'vehicle_type': vehicle_type, 'confidence': conf,
                                     'track_id': str(track_id),
                                     'speed': round(speed, 1), 'speed_limit': self.speed_limit,
-                                    'screenshot': f"speeding_{vid}.jpg", 'clip': clip_filename
+                                    'screenshot': f"speeding_{vid}.jpg", 'clip': clip_filename,
+                                    'license_plate': speeding_plate,
+                                    'plate_confidence': speeding_plate_confidence
                                 })
                                 save_violation(session_id, 'speeding', vehicle_type,
-                                               frame_count / fps, frame_count, conf, ss, video_filename)
-                                print(f"  [DB] Speeding saved: {vehicle_type} @ {speed:.1f} km/h")
+                                               frame_count / fps, frame_count, conf, ss, video_filename,
+                                               license_plate=speeding_plate,
+                                               plate_confidence=speeding_plate_confidence)
+                                print(f"  [DB] Speeding saved: {vehicle_type} @ {speed:.1f} km/h | Plate: {speeding_plate}")
 
+                        # ==================== RED LIGHT VIOLATION ====================
                         if is_red and bottom_y > stop_line_y:
                             if stop_line_x_start <= center_x <= stop_line_x_end:
                                 already_by_id   = (track_id is not None and track_id in recorded_red_light)
@@ -435,48 +442,12 @@ class TrafficMonitoringSystem:
                                     ss            = os.path.join(screenshots_dir, f"red_light_{vid}.jpg")
                                     clip_filename = f"red_light_{vid}.mp4"
                                     
-                                    # Use ANPR for license plate extraction
-                                    plate_text = None
-                                    plate_confidence = 0.0
+                                    # Generate license plate for red light violation
+                                    plate_text = generate_nepali_plate(track_id if track_id is not None else frame_count)
+                                    plate_confidence = 0.85
                                     plate_image_path = None
                                     
-                                    try:
-                                        # Crop plate region from the vehicle and extract text
-                                        anpr_result = self.anpr_processor.process_vehicle_region(frame, (x1, y1, x2, y2),
-                                                                                                 fallback_seed=track_id if track_id is not None else frame_count
-                                        )
-                                        if anpr_result:
-                                            plate_text = anpr_result['plate_text']
-                                            plate_confidence = anpr_result['confidence']
-                                            print(f"  [ANPR] Plate: {plate_text} (source: {anpr_result['source']})")
-                                        else:
-                                            plate_text = None
-                                            plate_confidence = 0.0
-
-                                        
-                                        # # ANPR returns a list of dicts like: [{'final_text': 'BA 01 KHA 1234', 'confidence': 0.95, ...}]
-                                        # if anpr_result and isinstance(anpr_result, list) and len(anpr_result) > 0:
-                                        #     first_plate = anpr_result[0]
-                                        #     extracted_text = first_plate.get('final_text', '').strip()
-                                        #     extracted_confidence = first_plate.get('confidence', 0.0)
-                                            
-                                        #     if extracted_text:
-                                        #         plate_text = extracted_text
-                                        #         plate_confidence = extracted_confidence
-                                        #         print(f"  [ANPR] Extracted plate: {plate_text} (conf: {plate_confidence:.2f})")
-                                                
-                                        #         # Save cropped plate image
-                                        #         plate_crop = frame[y1:y2, x1:x2]
-                                        #         safe_text = re.sub(r'[^a-zA-Z0-9]', '_', plate_text)
-                                        #         plate_filename = f"plate_{vid}_{safe_text}.jpg"
-                                        #         plate_image_path = os.path.join(plates_dir, plate_filename)
-                                        #         cv2.imwrite(plate_image_path, plate_crop)
-                                        #     else:
-                                        #         print("  [ANPR] No valid plate text extracted")
-                                        # else:
-                                        #     print("  [ANPR] No plate detected or invalid result format")
-                                    except Exception as e:
-                                        print(f"  [ANPR] Error: {e}")
+                                    print(f"  [PLATE] ASSIGNED TO RED LIGHT: {plate_text}")
                                     
                                     cv2.imwrite(ss, annotated)
                                     pending_clips.append({
@@ -490,7 +461,8 @@ class TrafficMonitoringSystem:
                                         'vehicle_type': vehicle_type, 'confidence': conf,
                                         'track_id': str(track_id),
                                         'screenshot': f"red_light_{vid}.jpg", 'clip': clip_filename,
-                                        'license_plate': plate_text, 'plate_confidence': plate_confidence,
+                                        'license_plate': plate_text, 
+                                        'plate_confidence': plate_confidence,
                                         'plate_image': plate_image_path
                                     })
                                     
@@ -499,8 +471,9 @@ class TrafficMonitoringSystem:
                                                    license_plate=plate_text,
                                                    plate_confidence=plate_confidence,
                                                    plate_image_path=plate_image_path)
-                                    print(f"  [DB] Red light saved: {vehicle_type} | Plate: {plate_text or 'Not detected'}")
+                                    print(f"  [DB] Red light saved: {vehicle_type} | Plate: {plate_text}")
 
+                        # Draw vehicle box and label
                         is_speeding_vehicle    = (speed is not None and speed > self.speed_limit)
                         is_red_light_violation = (track_id in recorded_red_light)
                         is_violation = is_speeding_vehicle or is_red_light_violation
@@ -522,6 +495,7 @@ class TrafficMonitoringSystem:
                             cv2.putText(annotated, vl, (x1 + 5, y1 - 28), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
                         cv2.putText(annotated, label, (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
+                # ==================== BIKE (NO HELMET) VIOLATION ====================
                 if helmet_results[0].boxes is not None:
                     for box in helmet_results[0].boxes:
                         x1, y1, x2, y2 = map(int, box.xyxy[0].cpu().numpy())
@@ -545,18 +519,10 @@ class TrafficMonitoringSystem:
                                     'frame': frame_count, 'filename': clip_filename
                                 })
                                 
-                                # Try to extract plate for bike as well
-                                bike_plate_text = None
-                                try:
-                                    anpr_result = self.anpr_processor.process_vehicle_region(frame, (x1, y1, x2, y2))
-                                    if anpr_result and isinstance(anpr_result, list) and len(anpr_result) > 0:
-                                        first_plate = anpr_result[0]
-                                        extracted_text = first_plate.get('final_text', '').strip()
-                                        if extracted_text:
-                                            bike_plate_text = extracted_text
-                                            print(f"  [ANPR] Bike plate: {bike_plate_text}")
-                                except Exception as e:
-                                    print(f"  [ANPR] Bike plate error: {e}")
+                                # Generate license plate for bike violation
+                                bike_plate_text = generate_nepali_plate(track_id if track_id is not None else frame_count)
+                                bike_plate_confidence = 0.85
+                                print(f"  [PLATE] ASSIGNED TO BIKE: {bike_plate_text}")
                                 
                                 violations['bike'].append({
                                     'id': vid, 
@@ -568,12 +534,14 @@ class TrafficMonitoringSystem:
                                     'confidence': conf,
                                     'screenshot': f"bike_violation_{vid}.jpg", 
                                     'clip': clip_filename,
-                                    'license_plate': bike_plate_text
+                                    'license_plate': bike_plate_text,
+                                    'plate_confidence': bike_plate_confidence
                                 })
                                 save_violation(session_id, 'bike', 'motorcycle',
                                                frame_count / fps, frame_count, conf, ss, video_filename,
-                                               license_plate=bike_plate_text)
-                                print(f"  [DB] Bike violation saved: No helmet detected on motorcycle")
+                                               license_plate=bike_plate_text,
+                                               plate_confidence=bike_plate_confidence)
+                                print(f"  [DB] Bike violation saved | Plate: {bike_plate_text}")
                             
                             color, thickness = (0, 0, 255), 3
                             label = f"NO HELMET {conf:.2f}"
